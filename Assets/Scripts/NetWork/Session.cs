@@ -10,7 +10,13 @@ namespace NetWork
 {
     public class ServerSession : PacketSession
     {
-        private ClientPacketHandler _packetHandler = new ClientPacketHandler();
+        private ClientPacketHandler _packetHandler;
+
+        public ServerSession() :base() 
+        {
+            _packetHandler = new ClientPacketHandler(this);
+        }
+
 
         public override void OnConnected(EndPoint endPoint)
         {
@@ -30,7 +36,7 @@ namespace NetWork
 
         public override void OnSend(int numOfBytes)
         {
-            throw new NotImplementedException();
+            Debug.Log($"Recv : {numOfBytes}");
         }
     }
 

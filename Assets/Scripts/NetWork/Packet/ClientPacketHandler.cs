@@ -1,58 +1,43 @@
+using NetWork;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Search;
 using UnityEngine;
 
-public delegate void PacketDispatcher(ArraySegment<byte> _buffer);
-
-public class ClientPacketHandler : PacketHandler
+public class ClientPacketHandler : ClientPacketHandler_Generated
 {
-    private PacketDispatcher[] _dispatcher = new PacketDispatcher[(ushort)PacketType.INVALID_PACKET];
+    public Session Owner;
 
-    public ClientPacketHandler()
+    public ClientPacketHandler(Session owner) : base()
     {
-        for (int i = 0; i < _dispatcher.Length; i++)
-        {
-            _dispatcher[i] = Dispatch_Invalid_Packet;
-        }
-
-        
-        _dispatcher[(ushort)PacketType.CG_TestPacket] = Dispatch_CG_TestPacket;
+        Owner = owner;
     }
 
-    public override bool ProcessPacket(ArraySegment<byte> _buffer)
+    public override void Dispatch_GC_TestPacket(ArraySegment<byte> _buffer)
     {
-        PacketReader pr = new PacketReader(_buffer);
-        PacketHeader header = new PacketHeader();
-        pr.Read(ref header);
+        GC_TestPacket packet = new GC_TestPacket();
+        packet.DeSerialize(_buffer);
 
-        _dispatcher[(ushort)(header.type)](_buffer);
+        Debug.Log($"Recv GC_TestPacket : {packet.id}, message : {packet.message}, Count : {packet.id_list.Count}");
 
-        return true;
+        CG_TestPacket packet2 = new CG_TestPacket();
+        packet2.id = packet.id;
+        packet2.message = packet.message;
+        packet2.id_list = packet.id_list;
+
+        Send_CG_TestPacket(packet2);
     }
 
-    public void Dispatch_Invalid_Packet(ArraySegment<byte> _buffer)
+    public override void Send_CG_TestPacket(CG_TestPacket packet)
     {
-        Debug.LogError("Dispatch_Invalid_Packet");
+        SendPacket(packet);
     }
 
-    
-    public void Dispatch_CG_TestPacket(ArraySegment<byte> _buffer)
+    private void SendPacket(IPacket packet)
     {
-        // 구현 필요
+        ArraySegment<byte> buffer;
+        packet.Serialize(out buffer);
+        Owner.Send(buffer);
     }
-    
-
-    
-    public void Send_GC_TestPacket(GC_TestPacket packet)
-    {
-        // 구현 필요
-    }
-    
-}
-
-public abstract class PacketHandler
-{
-    public abstract bool ProcessPacket(ArraySegment<byte> _buffer);
 }
