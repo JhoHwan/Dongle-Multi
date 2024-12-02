@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 using NetWork;
+using System.Collections.Generic;
 
 public class NetWorkManager : MonoBehaviourSingleton<NetWorkManager>
 {

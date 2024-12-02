@@ -10,6 +10,8 @@ namespace NetWork
 {
     public class ServerSession : PacketSession
     {
+        private ClientPacketHandler _packetHandler = new ClientPacketHandler();
+
         public override void OnConnected(EndPoint endPoint)
         {
             Debug.Log($"Connect to Server {endPoint}");
@@ -23,7 +25,7 @@ namespace NetWork
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-
+            _packetHandler.ProcessPacket(buffer);
         }
 
         public override void OnSend(int numOfBytes)
