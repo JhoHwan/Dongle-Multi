@@ -1,0 +1,60 @@
+{
+  "packets": [
+    {
+      "packet_type": "GC_TestPacket",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uint16"
+        },
+        {
+          "name": "message",
+          "type": "wstring",
+          "string": true
+        },
+        {
+          "name": "id_list",
+          "type": "uint16",
+          "list": true
+        }
+      ]
+    },
+    {
+      "packet_type": "CG_TestPacket",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uint16"
+        },
+        {
+          "name": "message",
+          "type": "wstring",
+          "string": true
+        },
+        {
+          "name": "id_list",
+          "type": "uint16",
+          "list": true
+        }
+      ]
+    },
+    {
+      "packet_type": "GC_CheckKeepAlive",
+      "fields": [
+        {
+          "name": "userID",
+          "type": "uint8"
+        }
+      ]
+    },
+    {
+      "packet_type": "CG_ResponseKeepAlive",
+      "fields": [
+        {
+          "name": "userID",
+          "type": "uint8"
+        }
+      ]
+    }
+  ]
+}
