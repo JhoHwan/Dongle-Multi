@@ -21,8 +21,6 @@ public class {{ packet.packet_type }} : IPacket
     // ¸®½ºÆ®
 	{% for field in packet.fields if field.list %}public List<{{ field.type }}> {{ field.name }};
 	{% endfor %}
-
-
     public ushort GetDataSize()
     {
         int size = sizeof(ushort) + sizeof(ushort);

@@ -7,7 +7,8 @@ public enum PacketType : ushort
 {
     GC_TestPacket,
     CG_TestPacket,
-    LD_TestPacket,
+    GC_CheckKeepAlive,
+    CG_ResponseKeepAlive,
     
     INVALID_PACKET
 }
@@ -23,8 +24,6 @@ public class CG_TestPacket : IPacket
     // 리스트
 	public List<ushort> id_list;
 	
-
-
     public ushort GetDataSize()
     {
         int size = sizeof(ushort) + sizeof(ushort);
@@ -83,6 +82,65 @@ public class CG_TestPacket : IPacket
     }
 }
 
+public class CG_ResponseKeepAlive : IPacket
+{
+    // 고정 길이
+    public byte userID;
+	
+    // 문자열
+    
+    // 리스트
+	
+    public ushort GetDataSize()
+    {
+        int size = sizeof(ushort) + sizeof(ushort);
+        
+        // 고정 길이
+        size = size + sizeof(byte);
+		
+        // 문자열 길이
+		
+        //리스트 길이
+        
+        return (ushort)size;
+    }
+
+    public bool Serialize(out ArraySegment<byte> buffer)
+    {
+        PacketHeader header = new PacketHeader
+        {
+            type = PacketType.CG_ResponseKeepAlive,
+            size = GetDataSize()
+        };
+
+        PacketWriter pw = new PacketWriter(header.size);
+        pw.Write(header);
+        pw.Write(userID);
+        
+
+        if(pw.GetSize() != header.size)
+        {
+            buffer = null; 
+            return false;
+        }
+
+        buffer = pw.GetBuffer();
+        return true;
+    }
+
+    public bool DeSerialize(ArraySegment<byte> buffer)
+    {
+        PacketHeader packetHeader = new PacketHeader();
+
+        PacketReader pr = new PacketReader(buffer);
+        
+        pr.Read(ref packetHeader);
+        pr.Read(ref userID);
+        
+        return true;
+    }
+}
+
 public class GC_TestPacket : IPacket
 {
     // 고정 길이
@@ -94,8 +152,6 @@ public class GC_TestPacket : IPacket
     // 리스트
 	public List<ushort> id_list;
 	
-
-
     public ushort GetDataSize()
     {
         int size = sizeof(ushort) + sizeof(ushort);
@@ -149,6 +205,65 @@ public class GC_TestPacket : IPacket
         pr.Read(ref id);
         pr.Read(ref message);
         pr.Read(ref id_list);
+        
+        return true;
+    }
+}
+
+public class GC_CheckKeepAlive : IPacket
+{
+    // 고정 길이
+    public byte userID;
+	
+    // 문자열
+    
+    // 리스트
+	
+    public ushort GetDataSize()
+    {
+        int size = sizeof(ushort) + sizeof(ushort);
+        
+        // 고정 길이
+        size = size + sizeof(byte);
+		
+        // 문자열 길이
+		
+        //리스트 길이
+        
+        return (ushort)size;
+    }
+
+    public bool Serialize(out ArraySegment<byte> buffer)
+    {
+        PacketHeader header = new PacketHeader
+        {
+            type = PacketType.GC_CheckKeepAlive,
+            size = GetDataSize()
+        };
+
+        PacketWriter pw = new PacketWriter(header.size);
+        pw.Write(header);
+        pw.Write(userID);
+        
+
+        if(pw.GetSize() != header.size)
+        {
+            buffer = null; 
+            return false;
+        }
+
+        buffer = pw.GetBuffer();
+        return true;
+    }
+
+    public bool DeSerialize(ArraySegment<byte> buffer)
+    {
+        PacketHeader packetHeader = new PacketHeader();
+
+        PacketReader pr = new PacketReader(buffer);
+        
+        pr.Read(ref packetHeader);
+        pr.Read(ref userID);
         
         return true;
     }

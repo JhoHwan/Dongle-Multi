@@ -19,6 +19,7 @@ public abstract class ClientPacketHandler_Generated : PacketHandler
 
         
         _dispatcher[(ushort)PacketType.GC_TestPacket] = Dispatch_GC_TestPacket;
+        _dispatcher[(ushort)PacketType.GC_CheckKeepAlive] = Dispatch_GC_CheckKeepAlive;
     }
 
     public override bool ProcessPacket(ArraySegment<byte> _buffer)
@@ -39,9 +40,12 @@ public abstract class ClientPacketHandler_Generated : PacketHandler
 
     
     public abstract void Dispatch_GC_TestPacket(ArraySegment<byte> _buffer);
+    public abstract void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer);
 
     
     public abstract void Send_CG_TestPacket(CG_TestPacket packet);
+    
+    public abstract void Send_CG_ResponseKeepAlive(CG_ResponseKeepAlive packet);
     
 }
 

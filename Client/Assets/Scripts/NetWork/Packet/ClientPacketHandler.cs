@@ -14,6 +14,11 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
         Owner = owner;
     }
 
+    public override void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer)
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Dispatch_GC_TestPacket(ArraySegment<byte> _buffer)
     {
         GC_TestPacket packet = new GC_TestPacket();
@@ -27,6 +32,11 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
         packet2.id_list = packet.id_list;
 
         Send_CG_TestPacket(packet2);
+    }
+
+    public override void Send_CG_ResponseKeepAlive(CG_ResponseKeepAlive packet)
+    {
+        throw new NotImplementedException();
     }
 
     public override void Send_CG_TestPacket(CG_TestPacket packet)
