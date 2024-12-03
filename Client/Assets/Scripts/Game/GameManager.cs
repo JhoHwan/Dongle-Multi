@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     {
         Init();
         Application.targetFrameRate = 60;
+        Application.runInBackground = true;
         Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
     }
 
@@ -64,8 +65,7 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     {
         if (packet.playerID == PlayerID) return;
 
-        Vector2 position = new Vector2(packet.x, 5);
-        _spawner.transform.localPosition = position;
+        _spawner.UpdatePosition(packet.x);
     }
 
     private void OnDestroy()

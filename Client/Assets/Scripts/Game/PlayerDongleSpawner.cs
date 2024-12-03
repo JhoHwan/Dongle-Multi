@@ -20,7 +20,9 @@ public class PlayerDongleSpawner : DongleSpawner
     private int _nextLevel;
 
     private WaitForSeconds _sleep = new WaitForSeconds(1.0f);
+    private WaitForSeconds _sleep1 = new WaitForSeconds(0.1f);
 
+    private float cacheX;
 
     private void Awake()
     {
@@ -36,6 +38,7 @@ public class PlayerDongleSpawner : DongleSpawner
         _curDongle = SpawnDongle(0);
         _nextLevel = _random.Next(0, 3);
         InGameUIManager.Instance.NextDongles[0].SetDongleImage(_nextLevel);
+        StartCoroutine(SendMovePacketRoutine());
     }
 
     private void OnEnable()
@@ -57,12 +60,6 @@ public class PlayerDongleSpawner : DongleSpawner
     {
         // 입력값을 읽어서 moveValue에 저장
         _moveValue = context.ReadValue<float>();
-
-        CG_SendMoveSpawner p = new CG_SendMoveSpawner();
-        p.playerID = GameManager.Instance.PlayerID;
-        p.roomID = 0;
-        p.x = transform.localPosition.x;
-        ClientPacketHandler.Instance.Send_CG_SendMoveSpawner(p);
     }
 
     private void OnDrop(InputAction.CallbackContext context)
@@ -118,5 +115,23 @@ public class PlayerDongleSpawner : DongleSpawner
         InGameUIManager.Instance.NextDongles[0].SetDongleImage(_nextLevel);
 
         TurnOnLine(true); 
+    }
+
+    IEnumerator SendMovePacketRoutine()
+    {
+        while (true)
+        {
+            if (cacheX != transform.localPosition.x)
+            {
+                Debug.Log("Send MovePacket");
+                CG_SendMoveSpawner p = new CG_SendMoveSpawner();
+                p.playerID = GameManager.Instance.PlayerID;
+                p.roomID = 0;
+                p.x = transform.localPosition.x;
+                ClientPacketHandler.Instance.Send_CG_SendMoveSpawner(p);
+            }
+            cacheX = transform.localPosition.x;
+            yield return _sleep1;
+        }
     }
 }
