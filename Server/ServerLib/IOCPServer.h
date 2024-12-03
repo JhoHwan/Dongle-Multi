@@ -32,15 +32,13 @@ public:
     void AddSession(std::shared_ptr<Session> session);
     void DeleteSession(std::shared_ptr<Session> session);
 
-    
-
     // 이벤트 디스패처
     void Dispatch();
 
     // Getter
     inline const NetAddress& GetAddress() const { return _address; }
 
-private:
+protected:
     HANDLE _iocpHandle;
     NetAddress _address;
 
@@ -50,6 +48,6 @@ private:
     set<std::shared_ptr<Session>> _sessions;
     SessionFactory _sessionFactory;
 // Mutex
-private:
-    mutex _mutex;
+protected:
+    mutex _lock;
 };

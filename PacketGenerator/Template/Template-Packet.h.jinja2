@@ -28,8 +28,7 @@ public:
 		size_t size = sizeof(PacketHeader);
 
 		//고정 길이 size
-		size = size {% for field in packet.fields if not (field.string or field.list) %}+ sizeof({{ field.name }});
-		{% endfor %}
+		size = size {% for field in packet.fields if not (field.string or field.list) %}+ sizeof({{ field.name }}){% endfor %};
 		//문자열 size
 		{% for field in packet.fields if field.string %}size += sizeof(uint16);
 		size += {{ field.name }}.size() * sizeof(wchar);

@@ -1,40 +1,11 @@
 {
   "packets": [
     {
-      "packet_type": "GC_TestPacket",
+      "packet_type": "GC_SendPlayerInfo",
       "fields": [
         {
-          "name": "id",
-          "type": "uint16"
-        },
-        {
-          "name": "message",
-          "type": "wstring",
-          "string": true
-        },
-        {
-          "name": "id_list",
-          "type": "uint16",
-          "list": true
-        }
-      ]
-    },
-    {
-      "packet_type": "CG_TestPacket",
-      "fields": [
-        {
-          "name": "id",
-          "type": "uint16"
-        },
-        {
-          "name": "message",
-          "type": "wstring",
-          "string": true
-        },
-        {
-          "name": "id_list",
-          "type": "uint16",
-          "list": true
+          "name": "playerID",
+          "type": "uint8"
         }
       ]
     },
@@ -42,7 +13,7 @@
       "packet_type": "GC_CheckKeepAlive",
       "fields": [
         {
-          "name": "userID",
+          "name": "playerID",
           "type": "uint8"
         }
       ]
@@ -51,10 +22,67 @@
       "packet_type": "CG_ResponseKeepAlive",
       "fields": [
         {
-          "name": "userID",
+          "name": "playerID",
           "type": "uint8"
         }
       ]
+    },
+    {
+      "packet_type": "CG_RequestEnterRoom",
+      "fields": [
+        {
+          "name": "playerID",
+          "type": "uint16"
+        },
+        {
+          "name": "roomID",
+          "type": "uint16"
+        }
+      ]
+    },
+    {
+      "packet_type": "GC_ResponseEnterRoom",
+      "fields": [
+        {
+          "name": "roomID",
+          "type": "uint16"
+        },
+        {
+          "name": "bSuccess",
+          "type": "uint8"
+        }
+      ]
+    },
+    {
+      "packet_type": "CG_SendMoveSpawner",
+      "fields": [
+        {
+          "name": "playerID",
+          "type": "uint16"
+        },
+        {
+          "name": "roomID",
+          "type": "uint16"
+        },
+        {
+          "name": "x",
+          "type": "float"
+        }
+      ]
+    },
+    {
+      "packet_type": "GC_BroadCastMoveSpawner",
+      "fields": [
+        {
+          "name": "playerID",
+          "type": "uint16"
+        },
+        {
+          "name": "x",
+          "type": "float"
+        }
+      ]
     }
+
   ]
 }

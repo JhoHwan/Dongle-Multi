@@ -1,10 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourSingleton<GameManager>
 {
-    [SerializeField] private PlayerDongleSpawner _spawner;
+    Queue<Action> jobQueue = new Queue<Action>();
+    public ushort PlayerID = 0;
+
+    [SerializeField] private PlayerDongleSpawner _playerSpawner;
+    [SerializeField] public DongleSpawner _spawner;
+
     private int _playerScore = 0;
     public int Seed { get; private set; }
 
@@ -31,9 +37,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        Init();
         Application.targetFrameRate = 60;
-        _spawner.GameMgr = this;
-        Seed = Random.Range(int.MinValue, int.MaxValue);
+        Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
     }
 
     private void Start()
@@ -46,11 +52,38 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        _spawner.CanDrop = false;
+        _playerSpawner.CanDrop = false;
     }
 
     public void IncreaseScore(int score)
     {
         _playerScore += score;
+    }
+
+    public void SpawnerMove(GC_BroadCastMoveSpawner packet)
+    {
+        if (packet.playerID == PlayerID) return;
+
+        Vector2 position = new Vector2(packet.x, 5);
+        _spawner.transform.localPosition = position;
+    }
+
+    private void OnDestroy()
+    {
+        DeInit();
+    }
+
+    public void CreateJob(Action job)
+    {
+        jobQueue.Enqueue(job);
+    }
+
+    private void Update()
+    {
+        while (jobQueue.Count > 0)
+        {
+            Action action = jobQueue.Dequeue();
+            action();
+        }
     }
 }

@@ -27,7 +27,8 @@ def ConvertTypeToCSharp(packet_data):
     "uint32": "uint",
     "uint64": "ulong",
     "wchar": "char",
-    "wstring" : "string"
+    "wstring" : "string",
+    "float" : "float"
     }
 
     for packet in packet_data:

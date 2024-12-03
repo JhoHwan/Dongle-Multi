@@ -25,7 +25,7 @@ shared_ptr<Session> IOCPServer::CreateSession() const
 
 void IOCPServer::BroadCast(shared_ptr<SendBuffer> sendBuffer)
 {
-    lock_guard<mutex> lock(_mutex);
+    lock_guard<mutex> lock(_lock);
     if (_sessions.size() == 0) return;
     for (const auto& session : _sessions)
     {
@@ -112,14 +112,14 @@ void IOCPServer::Dispatch()
 
 void IOCPServer::AddSession(shared_ptr<Session> session)
 {
-    lock_guard<mutex> lock(_mutex);
+    lock_guard<mutex> lock(_lock);
     _sessions.insert(session);
     session->SetServer(shared_from_this());
 }
 
 void IOCPServer::DeleteSession(std::shared_ptr<Session> session)
 {
-    lock_guard<mutex> lock(_mutex);
+    lock_guard<mutex> lock(_lock);
 
     _sessions.erase(session);
 

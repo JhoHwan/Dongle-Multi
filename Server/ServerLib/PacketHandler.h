@@ -17,7 +17,7 @@ public:
 		cout << "InvalidPacket" << endl;
 	}
 
-private:
+protected:
 	shared_ptr<IOCPServer> _owner;
 };
 

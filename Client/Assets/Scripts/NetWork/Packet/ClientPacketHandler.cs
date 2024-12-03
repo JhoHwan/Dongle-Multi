@@ -2,45 +2,76 @@ using NetWork;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class ClientPacketHandler : ClientPacketHandler_Generated
 {
-    public Session Owner;
+    public static ClientPacketHandler Instance;
 
-    public ClientPacketHandler(Session owner) : base()
+    public ClientPacketHandler()
     {
-        Owner = owner;
+        Instance = this;
+    }
+
+    public override void Dispatch_GC_BroadCastMoveSpawner(ArraySegment<byte> _buffer)
+    {
+        Debug.Log("Dispatch_GC_BroadCastMoveSpawner");
+
+        GC_BroadCastMoveSpawner packet = new GC_BroadCastMoveSpawner();
+        packet.DeSerialize(_buffer);
+        GameManager.Instance.CreateJob(() => { GameManager.Instance.SpawnerMove(packet); });
     }
 
     public override void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer)
     {
-        throw new NotImplementedException();
+        Debug.Log("Dispatch_GC_CheckKeepAlive");
+
     }
 
-    public override void Dispatch_GC_TestPacket(ArraySegment<byte> _buffer)
+    public override void Dispatch_GC_ResponseEnterRoom(ArraySegment<byte> _buffer)
     {
-        GC_TestPacket packet = new GC_TestPacket();
+        Debug.Log("Dispatch_GC_ResponseEnterRoom");
+
+        GC_ResponseEnterRoom packet = new GC_ResponseEnterRoom();
         packet.DeSerialize(_buffer);
 
-        Debug.Log($"Recv GC_TestPacket : {packet.id}, message : {packet.message}, Count : {packet.id_list.Count}");
+        if(packet.bSuccess == 0)
+        {
+            Debug.LogError("Fail Enter Room");
+            return;
+        }
+        Debug.Log($"Sucess Enter Room : {packet.roomID}");
+    }
 
-        CG_TestPacket packet2 = new CG_TestPacket();
-        packet2.id = packet.id;
-        packet2.message = packet.message;
-        packet2.id_list = packet.id_list;
+    public override void Dispatch_GC_SendPlayerInfo(ArraySegment<byte> _buffer)
+    {
+        Debug.Log("Dispatch_GC_SendPlayerInfo");
 
-        Send_CG_TestPacket(packet2);
+        GC_SendPlayerInfo p = new GC_SendPlayerInfo();
+        p.DeSerialize(_buffer);
+        GameManager.Instance.PlayerID = p.playerID;
+
+        CG_RequestEnterRoom packet = new CG_RequestEnterRoom();
+        packet.playerID = GameManager.Instance.PlayerID;
+        packet.roomID = 0;
+        Send_CG_RequestEnterRoom(packet);
+    }
+
+    public override void Send_CG_RequestEnterRoom(CG_RequestEnterRoom packet)
+    {
+        Debug.Log("Send_CG_RequestEnterRoom");
+        SendPacket(packet);
     }
 
     public override void Send_CG_ResponseKeepAlive(CG_ResponseKeepAlive packet)
     {
-        throw new NotImplementedException();
+        Debug.Log("Send_CG_ResponseKeepAlive");
+        SendPacket(packet);
     }
 
-    public override void Send_CG_TestPacket(CG_TestPacket packet)
+    public override void Send_CG_SendMoveSpawner(CG_SendMoveSpawner packet)
     {
+        Debug.Log("Send_CG_SendMoveSpawner");
         SendPacket(packet);
     }
 
@@ -48,6 +79,6 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
     {
         ArraySegment<byte> buffer;
         packet.Serialize(out buffer);
-        Owner.Send(buffer);
+        NetWorkManager.Instance.Send(buffer);
     }
 }

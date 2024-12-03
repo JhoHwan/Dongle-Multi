@@ -26,7 +26,7 @@ public class PlayerDongleSpawner : DongleSpawner
     {
         _inputActions = new PlayerInputActions();
         _spawnPosition = transform.position;
-        _random = new System.Random(GameMgr.Seed);
+        _random = new System.Random(GameManager.Instance.Seed);
 
         TurnOnLine(true);
     }
@@ -57,6 +57,12 @@ public class PlayerDongleSpawner : DongleSpawner
     {
         // 입력값을 읽어서 moveValue에 저장
         _moveValue = context.ReadValue<float>();
+
+        CG_SendMoveSpawner p = new CG_SendMoveSpawner();
+        p.playerID = GameManager.Instance.PlayerID;
+        p.roomID = 0;
+        p.x = transform.localPosition.x;
+        ClientPacketHandler.Instance.Send_CG_SendMoveSpawner(p);
     }
 
     private void OnDrop(InputAction.CallbackContext context)

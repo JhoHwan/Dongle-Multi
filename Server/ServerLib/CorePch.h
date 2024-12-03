@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Type.h"
+
 #include <memory>
 #include <atomic>
 #include <iostream>
@@ -9,11 +11,11 @@
 #include <queue>
 #include <array>
 #include <set>
+#include <map>
 #include <mutex>
 #include <functional>
 #include <limits>
-
-using namespace std;
+#include <shared_mutex>
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -21,7 +23,7 @@ using namespace std;
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib,"mswsock.lib")
 
-#include "Type.h"
+using namespace std;
 
 #include "RecvBuffer.h"
 

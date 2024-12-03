@@ -170,6 +170,18 @@ void Session::ProcessRecv(uint32 recvBytes)
 		return;
 	}
 
+	uint32 packetSize = 0;
+	while (_packetHandler->ReadPacket(_recvBuffer, OUT packetSize))
+	{
+		BYTE* packet = _recvBuffer.ReadPos();
+		_recvBuffer.OnRead(packetSize);
+
+		if (_packetHandler->ProcessPacket(packet))
+		{
+			//TODO : Error Log
+		}
+	}
+
 	OnRecv(recvBytes);
 
 	_recvBuffer.Clean();
@@ -243,20 +255,6 @@ void Session::OnRecv(uint32 recvBytes)
 {
 	//wprintf(L"Recv : %d\n", recvBytes);
 
-	if (_packetHandler == nullptr) return;
 
-	uint32 packetSize = 0;
-
-	while (_packetHandler->ReadPacket(_recvBuffer, OUT packetSize))
-	{
-		BYTE* packet = _recvBuffer.ReadPos();
-		_recvBuffer.OnRead(packetSize);
-
-
-		if (_packetHandler->ProcessPacket(packet))
-		{
-			//TODO : Error Log
-		}
-	}
 }
 

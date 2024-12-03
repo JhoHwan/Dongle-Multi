@@ -26,8 +26,7 @@ public class {{ packet.packet_type }} : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size {% for field in packet.fields if not (field.string or field.list) %}+ sizeof({{ field.type }});
-		{% endfor %}
+        size = size {% for field in packet.fields if not (field.string or field.list) %}+ sizeof({{ field.type }}){% endfor %};
         // 문자열 길이
 		{% for field in packet.fields if field.string %}size += sizeof(ushort);
 		size += {{ field.name }}.Length * sizeof(char);

@@ -53,7 +53,7 @@ public:
     inline RecvBuffer& GetRecvBuffer() { return _recvBuffer; }
     inline const NetAddress& GetAddress() const { return _address; }
 
-private:
+protected:
     atomic<bool> _isConnect;
     SOCKET _socket;
     std::shared_ptr<IOCPServer> _server;
@@ -67,7 +67,7 @@ private:
     atomic<bool> _sendRegistered;
     //TODO : Lock-Free Queue 적용해보기
 //IOCP Event
-private:
+protected:
     RecvEvent _recvEvent;
     SendEvent _sendEvent;
     DisconnectEvent _disConnectEvent;

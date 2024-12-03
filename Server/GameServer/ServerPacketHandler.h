@@ -15,21 +15,25 @@ public:
 			_packetDispatchers[i] = std::bind(&ServerPacketHandler::DispatchInvalidPacket, this);
 		}
 		
-		_packetDispatchers[static_cast<uint16>(PacketType::CG_TestPacket)] = std::bind(&ServerPacketHandler::Dispatch_CG_TestPacket, this, placeholders::_1);
 		_packetDispatchers[static_cast<uint16>(PacketType::CG_ResponseKeepAlive)] = std::bind(&ServerPacketHandler::Dispatch_CG_ResponseKeepAlive, this, placeholders::_1);
+		_packetDispatchers[static_cast<uint16>(PacketType::CG_RequestEnterRoom)] = std::bind(&ServerPacketHandler::Dispatch_CG_RequestEnterRoom, this, placeholders::_1);
+		_packetDispatchers[static_cast<uint16>(PacketType::CG_SendMoveSpawner)] = std::bind(&ServerPacketHandler::Dispatch_CG_SendMoveSpawner, this, placeholders::_1);
 
 	}
 	~ServerPacketHandler() {}
 
 // PacketDispatcher
 public:
-	void Dispatch_CG_TestPacket(BYTE* buffer);
 	void Dispatch_CG_ResponseKeepAlive(BYTE* buffer);
+	void Dispatch_CG_RequestEnterRoom(BYTE* buffer);
+	void Dispatch_CG_SendMoveSpawner(BYTE* buffer);
 	
 
 public:
-	static shared_ptr<SendBuffer> Send_GC_TestPacket(GC_TestPacket& packet);
+	static shared_ptr<SendBuffer> Send_GC_SendPlayerInfo(GC_SendPlayerInfo& packet);
 	static shared_ptr<SendBuffer> Send_GC_CheckKeepAlive(GC_CheckKeepAlive& packet);
+	static shared_ptr<SendBuffer> Send_GC_ResponseEnterRoom(GC_ResponseEnterRoom& packet);
+	static shared_ptr<SendBuffer> Send_GC_BroadCastMoveSpawner(GC_BroadCastMoveSpawner& packet);
 	
 
 // PacketHandler을(를) 통해 상속됨

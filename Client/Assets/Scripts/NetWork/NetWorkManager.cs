@@ -12,6 +12,8 @@ public class NetWorkManager : MonoBehaviourSingleton<NetWorkManager>
     public string serverIP = "127.0.0.1";
     public int serverPort = 7777;
 
+    private ClientPacketHandler _handler = new ClientPacketHandler();
+
     private void Awake()
     {
         Init();
@@ -25,10 +27,17 @@ public class NetWorkManager : MonoBehaviourSingleton<NetWorkManager>
         _connector.Connect(clientEP, () => { return _session; });
     }
 
+    public void Send(ArraySegment<byte> data)
+    {
+        _session.Send(data);
+    }
+
+
     private void OnDestroy()
     {
         DeInit();
         _session.Disconnect();
         _session = null;
+        _handler = null;
     }
 }

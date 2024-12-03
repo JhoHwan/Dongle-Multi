@@ -2,17 +2,62 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Packet.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="PlayerSession.cpp" />
-    <ClCompile Include="Room.cpp" />
-    <ClCompile Include="ServerPacketHandler.cpp" />
+    <ClCompile Include="GameServer.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSession.cpp">
+      <Filter>Server</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp">
+      <Filter>Server\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerPacketHandler.cpp">
+      <Filter>Server\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Server\Contents</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>Server\Contents</Filter>
+    </ClCompile>
+    <ClCompile Include="IDGenerator.cpp">
+      <Filter>Server\Contents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Packet.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="PlayerSession.h" />
-    <ClInclude Include="Room.h" />
-    <ClInclude Include="ServerPacketHandler.h" />
+    <ClInclude Include="GameServer.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h">
+      <Filter>Server\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSession.h">
+      <Filter>Server</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPacketHandler.h">
+      <Filter>Server\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Server\Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h">
+      <Filter>Server\Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="IDGenerator.h">
+      <Filter>Server\Contents</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Server">
+      <UniqueIdentifier>{a209f531-ef7d-465c-bdae-d94729a402a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Contents">
+      <UniqueIdentifier>{40943192-3bd7-47eb-a7ac-1034a9877690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\Packet">
+      <UniqueIdentifier>{97fbb1cf-f1f5-4003-8600-501ae30cccf0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -31,15 +31,74 @@ bool ServerPacketHandler::ProcessPacket(BYTE* packet)
     return true;
 }
 
-void ServerPacketHandler::Dispatch_CG_TestPacket(BYTE* packet)
+void ServerPacketHandler::Dispatch_CG_ResponseKeepAlive(BYTE* buffer)
 {
-    cout << "CG_TestPacekt Recv" << endl;
 }
 
-shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_TestPacket(GC_TestPacket& packet)
+void ServerPacketHandler::Dispatch_CG_RequestEnterRoom(BYTE* buffer)
 {
-   auto sendBuffer = GSendBufferManager->Open(1024);
-   packet.Serialize(sendBuffer->Buffer());
-   sendBuffer->Close(packet.GetDataSize());
-   return sendBuffer;
+    CG_RequestEnterRoom packet;
+    packet.Deserialize(buffer);
+    auto player = static_pointer_cast<GameServer>(_owner)->GetPlayer(packet.playerID);
+    if (player == nullptr) return;
+
+    auto room = GRoomManager.GetRoom(packet.roomID);
+
+    if (room == nullptr)
+    {
+        GC_ResponseEnterRoom packet;
+        packet.bSuccess = 0;
+        auto sendBuffer = Send_GC_ResponseEnterRoom(packet);
+        player->Send(sendBuffer);
+        return;
+    }
+
+    room->EnterPlayer(player);
+}
+
+void ServerPacketHandler::Dispatch_CG_SendMoveSpawner(BYTE* buffer)
+{
+    CG_SendMoveSpawner rp;
+    rp.Deserialize(buffer);
+    auto room = GRoomManager.GetRoom(rp.roomID);
+
+    GC_BroadCastMoveSpawner sp;
+    sp.playerID = rp.playerID;
+    sp.x = rp.x;
+
+    cout << rp.playerID << ": move spawner (" << rp.x << ")" << endl;
+
+    room->BroadCast(Send_GC_BroadCastMoveSpawner(sp));
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_SendPlayerInfo(GC_SendPlayerInfo& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+std::shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_CheckKeepAlive(GC_CheckKeepAlive& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_ResponseEnterRoom(GC_ResponseEnterRoom& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastMoveSpawner(GC_BroadCastMoveSpawner& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
 }

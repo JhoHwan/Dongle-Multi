@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Search;
 using UnityEngine;
 
 public delegate void PacketDispatcher(ArraySegment<byte> _buffer);
@@ -18,8 +17,10 @@ public abstract class ClientPacketHandler_Generated : PacketHandler
         }
 
         
-        _dispatcher[(ushort)PacketType.GC_TestPacket] = Dispatch_GC_TestPacket;
+        _dispatcher[(ushort)PacketType.GC_SendPlayerInfo] = Dispatch_GC_SendPlayerInfo;
         _dispatcher[(ushort)PacketType.GC_CheckKeepAlive] = Dispatch_GC_CheckKeepAlive;
+        _dispatcher[(ushort)PacketType.GC_ResponseEnterRoom] = Dispatch_GC_ResponseEnterRoom;
+        _dispatcher[(ushort)PacketType.GC_BroadCastMoveSpawner] = Dispatch_GC_BroadCastMoveSpawner;
     }
 
     public override bool ProcessPacket(ArraySegment<byte> _buffer)
@@ -39,13 +40,17 @@ public abstract class ClientPacketHandler_Generated : PacketHandler
     }
 
     
-    public abstract void Dispatch_GC_TestPacket(ArraySegment<byte> _buffer);
+    public abstract void Dispatch_GC_SendPlayerInfo(ArraySegment<byte> _buffer);
     public abstract void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer);
+    public abstract void Dispatch_GC_ResponseEnterRoom(ArraySegment<byte> _buffer);
+    public abstract void Dispatch_GC_BroadCastMoveSpawner(ArraySegment<byte> _buffer);
 
     
-    public abstract void Send_CG_TestPacket(CG_TestPacket packet);
-    
     public abstract void Send_CG_ResponseKeepAlive(CG_ResponseKeepAlive packet);
+    
+    public abstract void Send_CG_RequestEnterRoom(CG_RequestEnterRoom packet);
+    
+    public abstract void Send_CG_SendMoveSpawner(CG_SendMoveSpawner packet);
     
 }
 

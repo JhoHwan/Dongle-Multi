@@ -10,14 +10,6 @@ namespace NetWork
 {
     public class ServerSession : PacketSession
     {
-        private ClientPacketHandler _packetHandler;
-
-        public ServerSession() :base() 
-        {
-            _packetHandler = new ClientPacketHandler(this);
-        }
-
-
         public override void OnConnected(EndPoint endPoint)
         {
             Debug.Log($"Connect to Server {endPoint}");
@@ -31,19 +23,19 @@ namespace NetWork
 
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
-            _packetHandler.ProcessPacket(buffer);
+            ClientPacketHandler.Instance.ProcessPacket(buffer);
         }
 
         public override void OnSend(int numOfBytes)
         {
-            Debug.Log($"Recv : {numOfBytes}");
+            Debug.Log($"Send : {numOfBytes}");
         }
     }
 
 
     public abstract class PacketSession : Session
     {
-        public static readonly int HeaderSize = 6;
+        public static readonly int HeaderSize = 4;
 
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {

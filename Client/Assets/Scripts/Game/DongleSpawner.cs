@@ -6,13 +6,18 @@ public class DongleSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject _donglePrefab;
     [SerializeField] private GameObject _line;
-    public GameManager GameMgr { get; set; }
 
     protected float _dongleRadius;
 
     public void TurnOnLine(bool turnOn)
     {
         _line.SetActive(turnOn);
+    }
+
+    public void Start()
+    {
+        TurnOnLine(true);
+        SpawnDongle(0);
     }
 
     public Dongle SpawnDongle(int level)
@@ -22,7 +27,6 @@ public class DongleSpawner : MonoBehaviour
 
         dongle.Init(level);
         _dongleRadius = dongle.GetRadius();
-        dongle.GameMgr = GameMgr;
         return dongle;
     }
 }
