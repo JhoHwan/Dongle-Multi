@@ -32,7 +32,7 @@ public class DongleSpawner : MonoBehaviour
         Dongle dongle = newDongle.GetComponent<Dongle>();
 
         dongle.Init(level);
-        _dongleRadius = dongle.GetRadius();
+        _dongleRadius = dongle.GetRadius(); 
         return dongle;
     }
 
@@ -45,7 +45,7 @@ public class DongleSpawner : MonoBehaviour
     IEnumerator LerpPosition()
     {
         int currentFrame = 0;
-        int totalFrames = 6;
+        int totalFrames = 8;
         float x = transform.localPosition.x;
         Vector3 end = transform.localPosition;
         end.x = _cacheX;
