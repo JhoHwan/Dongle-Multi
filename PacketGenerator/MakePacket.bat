@@ -2,4 +2,8 @@ python PacketGenerator.py --type cpp --packet Packet --handler ServerPacketHandl
 
 
 python PacketGenerator.py --type cs --packet Packet --handler ClientPacketHandler --output ..\Client\Assets\Scripts\NetWork\Packet --target C
+
+
+
+
 PAUSE [finish]

@@ -9,9 +9,9 @@ public class InGameUIManager : MonoBehaviourSingleton<InGameUIManager>
     [HideInInspector] public InGameScoreBoard ScoreBoard;
     public List<InGameNextDongle> NextDongles;
 
-    private void Awake()
+    public override void Awake()
     {
-        Init();
+        base.Awake();
 
         Timer = FindObjectOfType<IngameTimer>();
         ScoreBoard = FindObjectOfType<InGameScoreBoard>();
@@ -27,5 +27,10 @@ public class InGameUIManager : MonoBehaviourSingleton<InGameUIManager>
                 player.SetName(name);
             }
         }
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
     }
 }

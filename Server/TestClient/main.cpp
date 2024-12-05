@@ -33,7 +33,7 @@ void ClientWorker(int clientId, const std::string& serverIp, int serverPort)
         std::cout << "Client " << clientId << ": Connected to server!" << std::endl;
 
         wchar_t recvBuffer[1024] = {};
-        for (int i = 0; i < INFINITE; i++) // 5번 메시지 송수신
+        for (int i = 0; i < 0; i++) // 5번 메시지 송수신
         {
             int bytesReceived = recv(clientSocket, reinterpret_cast<char*>(recvBuffer), sizeof(recvBuffer), 0);
             if (bytesReceived > 0)
@@ -77,7 +77,7 @@ int main()
         return 1;
     }
 
-    const std::string serverIp = "127.0.0.1"; // 서버 IP
+    const std::string serverIp = "221.158.7.41"; // 서버 IP
     const int serverPort = 7777;             // 서버 포트
     const int clientCount = 100;               // 생성할 클라이언트 수
 

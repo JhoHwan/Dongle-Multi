@@ -5,6 +5,7 @@
 GameServer::GameServer(NetAddress address, SessionFactory sessionFactory, shared_ptr<PacketHandler> packetHandler)
 	: IOCPServer(address, sessionFactory, packetHandler)
 {
+
 }
 
 shared_ptr<PlayerSession> GameServer::GetPlayer(uint16 id) const

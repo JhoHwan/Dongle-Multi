@@ -25,8 +25,8 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
     public override void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer)
     {
         Debug.Log("Dispatch_GC_CheckKeepAlive");
-
     }
+    
 
     public override void Dispatch_GC_ResponseEnterRoom(ArraySegment<byte> _buffer)
     {
@@ -45,8 +45,6 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
 
     public override void Dispatch_GC_SendPlayerInfo(ArraySegment<byte> _buffer)
     {
-        Debug.Log("Dispatch_GC_SendPlayerInfo");
-
         GC_SendPlayerInfo p = new GC_SendPlayerInfo();
         p.DeSerialize(_buffer);
         GameManager.Instance.PlayerID = p.playerID;
@@ -59,19 +57,16 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
 
     public override void Send_CG_RequestEnterRoom(CG_RequestEnterRoom packet)
     {
-        Debug.Log("Send_CG_RequestEnterRoom");
         SendPacket(packet);
     }
 
     public override void Send_CG_ResponseKeepAlive(CG_ResponseKeepAlive packet)
     {
-        Debug.Log("Send_CG_ResponseKeepAlive");
         SendPacket(packet);
     }
 
     public override void Send_CG_SendMoveSpawner(CG_SendMoveSpawner packet)
     {
-        Debug.Log("Send_CG_SendMoveSpawner");
         SendPacket(packet);
     }
 

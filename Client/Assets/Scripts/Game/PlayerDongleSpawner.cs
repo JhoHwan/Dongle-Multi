@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerDongleSpawner : DongleSpawner
+public class PlayerDongleSpawner : DongleSpawnerBase
 {
     [SerializeField] private float _speed; 
 
@@ -13,7 +14,6 @@ public class PlayerDongleSpawner : DongleSpawner
     private Vector3 _spawnPosition;
 
     // 동글 관련
-    private Dongle _curDongle;
     private System.Random _random;
     private bool _canDrop = true;
     public bool CanDrop { get => _canDrop; set => _canDrop = value; }
@@ -21,24 +21,28 @@ public class PlayerDongleSpawner : DongleSpawner
 
     private WaitForSeconds _sleep = new WaitForSeconds(1.0f);
     private WaitForSeconds _sleep1 = new WaitForSeconds(0.1f);
+    CG_SendMoveSpawner packet = new CG_SendMoveSpawner();
 
-    private float cacheX;
+    private TransformSyncSender _transformSyncSender;
 
-    private void Awake()
+    public void Awake()
     {
+        _transformSyncSender = GetComponent<TransformSyncSender>();
         _inputActions = new PlayerInputActions();
         _spawnPosition = transform.position;
         _random = new System.Random(GameManager.Instance.Seed);
-
-        TurnOnLine(true);
     }
 
-    private void Start()
+    public override void Start()
     {
-        _curDongle = SpawnDongle(0);
+        base.Start();
+
+        packet.playerID = GameManager.Instance.PlayerID;
+        packet.roomID = 0;
+        _transformSyncSender.Init(SendPacketEvent);
+
         _nextLevel = _random.Next(0, 3);
         InGameUIManager.Instance.NextDongles[0].SetDongleImage(_nextLevel);
-        StartCoroutine(SendMovePacketRoutine());
     }
 
     private void OnEnable()
@@ -79,6 +83,8 @@ public class PlayerDongleSpawner : DongleSpawner
         position.y = _spawnPosition.y;
 
         transform.localPosition = position;
+
+        packet.x = position.x;
     }
 
     public void DropDongle()
@@ -117,21 +123,9 @@ public class PlayerDongleSpawner : DongleSpawner
         TurnOnLine(true); 
     }
 
-    IEnumerator SendMovePacketRoutine()
+    private void SendPacketEvent()
     {
-        while (true)
-        {
-            if (cacheX != transform.localPosition.x)
-            {
-                Debug.Log("Send MovePacket");
-                CG_SendMoveSpawner p = new CG_SendMoveSpawner();
-                p.playerID = GameManager.Instance.PlayerID;
-                p.roomID = 0;
-                p.x = transform.localPosition.x;
-                ClientPacketHandler.Instance.Send_CG_SendMoveSpawner(p);
-            }
-            cacheX = transform.localPosition.x;
-            yield return _sleep1;
-        }
+        packet.x = transform.localPosition.x;
+        ClientPacketHandler.Instance.Send_CG_SendMoveSpawner(packet);
     }
 }

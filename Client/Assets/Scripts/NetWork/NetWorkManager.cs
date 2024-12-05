@@ -14,9 +14,10 @@ public class NetWorkManager : MonoBehaviourSingleton<NetWorkManager>
 
     private ClientPacketHandler _handler = new ClientPacketHandler();
 
-    private void Awake()
+    public override void Awake()
     {
-        Init();
+        base.Awake();
+
         Connect();
     }
 
@@ -27,15 +28,23 @@ public class NetWorkManager : MonoBehaviourSingleton<NetWorkManager>
         _connector.Connect(clientEP, () => { return _session; });
     }
 
+    public void Send(IPacket packet)
+    {
+        ArraySegment<byte> data;
+        packet.Serialize(out data);
+
+        Send(data);
+    }
+
     public void Send(ArraySegment<byte> data)
     {
         _session.Send(data);
     }
 
-
-    private void OnDestroy()
+    public override void OnDestroy()
     {
-        DeInit();
+        base.OnDestroy();
+
         _session.Disconnect();
         _session = null;
         _handler = null;

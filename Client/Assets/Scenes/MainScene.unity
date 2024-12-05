@@ -1076,7 +1076,8 @@ GameObject:
   m_Component:
   - component: {fileID: 730672088}
   - component: {fileID: 730672090}
-  - component: {fileID: 730672091}
+  - component: {fileID: 730672093}
+  - component: {fileID: 730672092}
   m_Layer: 0
   m_Name: DongleSpawner
   m_TagString: Untagged
@@ -1152,7 +1153,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &730672091
+--- !u!114 &730672092
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1161,7 +1162,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 730672087}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4acc7870bc1734c4390e8edf432dc552, type: 3}
+  m_Script: {fileID: 11500000, guid: fa6efdcc8f65ee943aa2c714d5b69664, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &730672093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730672087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8773e6716233b204c920fc08883cc7f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _donglePrefab: {fileID: 4800529588630362531, guid: 658997a6796b7104b8fe2dc6f2fc41fb, type: 3}
@@ -2723,7 +2736,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerID: 0
   _playerSpawner: {fileID: 1855584639}
-  _spawner: {fileID: 730672091}
+  _spawner: {fileID: 730672093}
 --- !u!4 &1171296330
 Transform:
   m_ObjectHideFlags: 0
@@ -3832,6 +3845,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1572323172
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1572323174}
+  - component: {fileID: 1572323173}
+  m_Layer: 0
+  m_Name: Room
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1572323173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572323172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5240e3a64ad69a746a73c9c4d0248ddb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myPlayerID: 0
+  player1_ID: 0
+  roomID: 0
+--- !u!4 &1572323174
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572323172}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1583734254
 GameObject:
   m_ObjectHideFlags: 0
@@ -4277,6 +4337,7 @@ GameObject:
   - component: {fileID: 1855584638}
   - component: {fileID: 1855584637}
   - component: {fileID: 1855584639}
+  - component: {fileID: 1855584640}
   m_Layer: 0
   m_Name: DongleSpawner
   m_TagString: Untagged
@@ -4367,6 +4428,18 @@ MonoBehaviour:
   _donglePrefab: {fileID: 4800529588630362531, guid: 658997a6796b7104b8fe2dc6f2fc41fb, type: 3}
   _line: {fileID: 963026634}
   _speed: 7.5
+--- !u!114 &1855584640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855584635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc66d44aea20c2d4996dbae1939f321e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1888976730
 GameObject:
   m_ObjectHideFlags: 0
@@ -4855,6 +4928,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1940388597}
+  - {fileID: 1572323174}
   - {fileID: 1786129542}
   - {fileID: 965760218}
   - {fileID: 1568680264}

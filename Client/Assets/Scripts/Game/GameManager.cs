@@ -35,9 +35,10 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
         }
     }
 
-    private void Awake()
+    public override void Awake()
     {
-        Init();
+        base.Awake();
+
         Application.targetFrameRate = 60;
         Application.runInBackground = true;
         Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
@@ -66,11 +67,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
         if (packet.playerID == PlayerID) return;
 
         _spawner.UpdatePosition(packet.x);
-    }
-
-    private void OnDestroy()
-    {
-        DeInit();
     }
 
     public void CreateJob(Action job)
