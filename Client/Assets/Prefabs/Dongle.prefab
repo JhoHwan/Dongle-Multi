@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5181800342636879635}
   - component: {fileID: 2682757786755906314}
   - component: {fileID: 5585904017094932095}
+  - component: {fileID: 6214907279853369227}
   - component: {fileID: 1722151872234027283}
   m_Layer: 0
   m_Name: Dongle
@@ -160,6 +161,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 91e372747c97a644c9ee5f868271814d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6214907279853369227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4800529588630362531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc66d44aea20c2d4996dbae1939f321e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!95 &1722151872234027283

@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerDongleSpawner : DongleSpawnerBase
 {
+    [SerializeField] private Transform _donglePool;
     [SerializeField] private float _speed; 
 
     // 이동 관련
@@ -96,6 +97,7 @@ public class PlayerDongleSpawner : DongleSpawnerBase
         TurnOnLine(false);
 
         _curDongle.Drop();
+        _curDongle.transform.parent = _donglePool;
         _curDongle = null;
 
         StartCoroutine(SpawnDongleRoutine());

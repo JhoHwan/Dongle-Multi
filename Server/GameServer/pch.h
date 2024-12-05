@@ -4,6 +4,7 @@
 
 #pragma comment(lib, "ServerLib.lib")
 
+#include "Structs.h"
 #include "IDGenerator.h"
 #include "Packet.h"
 #include "ServerPacketHandler.h"

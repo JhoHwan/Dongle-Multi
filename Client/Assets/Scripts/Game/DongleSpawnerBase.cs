@@ -12,6 +12,7 @@ public class DongleSpawnerBase : MonoBehaviour
     protected float _dongleRadius;
 
     protected Dongle _curDongle;
+    
 
     public void TurnOnLine(bool turnOn)
     {

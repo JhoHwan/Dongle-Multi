@@ -28,7 +28,6 @@ def ConvertTypeToCSharp(packet_data):
     "uint64": "ulong",
     "wchar": "char",
     "wstring" : "string",
-    "float" : "float"
     }
 
     for packet in packet_data:
@@ -36,7 +35,7 @@ def ConvertTypeToCSharp(packet_data):
             cpp_type = field['type']
         
             # Convert to C# type using the dictionary
-            csharp_type = c_type_to_csharp.get(cpp_type, "unknown")  # Default to "unknown" if type not found
+            csharp_type = c_type_to_csharp.get(cpp_type, cpp_type)  # Default to "unknown" if type not found
             field['type'] = csharp_type;
     return;
 

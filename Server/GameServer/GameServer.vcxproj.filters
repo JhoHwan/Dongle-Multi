@@ -48,6 +48,9 @@
     <ClInclude Include="IDGenerator.h">
       <Filter>Server\Contents</Filter>
     </ClInclude>
+    <ClInclude Include="Structs.h">
+      <Filter>Server\Packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Server">

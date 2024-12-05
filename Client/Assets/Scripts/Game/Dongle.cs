@@ -17,6 +17,8 @@ public class Dongle : MonoBehaviour
     private int _level;
     public static readonly int MAX_LEVEL = 7;
 
+    TransformSyncSender _syncSender;
+
     public int Level 
     {   
         get => _level; 
@@ -35,6 +37,23 @@ public class Dongle : MonoBehaviour
         _collider = GetComponent<CircleCollider2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _syncSender = GetComponent<TransformSyncSender>();
+    }
+
+    private void Start()
+    {
+        _syncSender.Init(() =>
+        {
+            CG_SendDonglePool packet = new CG_SendDonglePool();
+            DongleInfo info = new DongleInfo();
+            info.id = 0;
+            info.x = transform.localPosition.x;
+            info.y = transform.localPosition.y;
+            info.rotation = transform.localRotation.z;
+            packet.dongleInfos = new List<DongleInfo> { info };
+            packet.playerID = GameManager.Instance.PlayerID;
+            ClientPacketHandler.Instance.Send_CG_SendDonglePool(packet);
+        });
     }
 
     public float GetRadius()
@@ -59,8 +78,6 @@ public class Dongle : MonoBehaviour
     public void Drop()
     {
         _rigidbody.simulated = true;
-
-        transform.SetParent(null);
         Invoke(nameof(CanDie), 1.5f);
     }
 

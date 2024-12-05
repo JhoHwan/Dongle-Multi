@@ -71,6 +71,19 @@ void ServerPacketHandler::Dispatch_CG_SendMoveSpawner(BYTE* buffer)
     room->BroadCast(Send_GC_BroadCastMoveSpawner(sp));
 }
 
+void ServerPacketHandler::Dispatch_CG_SendDonglePool(BYTE* buffer)
+{
+    CG_SendDonglePool rp;
+    rp.Deserialize(buffer);
+    auto room = GRoomManager.GetRoom(rp.roomID);
+
+    GC_BroadCastDonglePool sp;
+    sp.playerID = rp.playerID;
+    sp.dongleInfos = rp.dongleInfos;
+
+    room->BroadCast(Send_GC_BroadCastDonglePool(sp));
+}
+
 shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_SendPlayerInfo(GC_SendPlayerInfo& packet)
 {
     auto sendBuffer = GSendBufferManager->Open(1024);
@@ -96,6 +109,14 @@ shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_ResponseEnterRoom(GC_Respons
 }
 
 shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastMoveSpawner(GC_BroadCastMoveSpawner& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastDonglePool(GC_BroadCastDonglePool& packet)
 {
     auto sendBuffer = GSendBufferManager->Open(1024);
     packet.Serialize(sendBuffer->Buffer());

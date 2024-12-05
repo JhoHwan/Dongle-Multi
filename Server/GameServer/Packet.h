@@ -12,6 +12,8 @@ enum class PacketType : uint16
 	GC_ResponseEnterRoom,
 	CG_SendMoveSpawner,
 	GC_BroadCastMoveSpawner,
+	CG_SendDonglePool,
+	GC_BroadCastDonglePool,
 	
 	INVALID_PACKET,
 };
@@ -206,6 +208,56 @@ public:
 	}
 };
 
+class GC_BroadCastDonglePool : public IPacket
+{
+public:
+	//고정 길이
+	uint16 playerID;
+	
+	//문자열
+	
+	//리스트
+	vector<DongleInfo> dongleInfos;
+	
+public:
+	uint16 GetDataSize() const override
+	{
+		size_t size = sizeof(PacketHeader);
+
+		//고정 길이 size
+		size = size + sizeof(playerID);
+		//문자열 size
+		
+		//리스트 size
+		size += sizeof(uint16);
+		size += dongleInfos.size() * sizeof(DongleInfo);
+		
+		return static_cast<uint16>(size);
+	}
+
+	bool Serialize(BYTE* buffer) const override
+	{
+		PacketHeader header;
+		header.packetType = PacketType::GC_BroadCastDonglePool;
+		header.packetSize = GetDataSize();
+
+		PacketWriter pw(buffer);
+		pw << header << playerID << dongleInfos;
+		
+		return pw.GetSize() == GetDataSize();
+	}
+
+	bool Deserialize(BYTE* buffer) override
+	{
+		PacketReader pr(buffer);
+
+		PacketHeader header;
+		pr >> header >> playerID >> dongleInfos;
+
+		return GetDataSize() == header.packetSize;
+	}
+};
+
 class CG_ResponseKeepAlive : public IPacket
 {
 public:
@@ -345,6 +397,57 @@ public:
 
 		PacketHeader header;
 		pr >> header >> playerID >> roomID >> x;
+
+		return GetDataSize() == header.packetSize;
+	}
+};
+
+class CG_SendDonglePool : public IPacket
+{
+public:
+	//고정 길이
+	uint16 playerID;
+	uint16 roomID;
+	
+	//문자열
+	
+	//리스트
+	vector<DongleInfo> dongleInfos;
+	
+public:
+	uint16 GetDataSize() const override
+	{
+		size_t size = sizeof(PacketHeader);
+
+		//고정 길이 size
+		size = size + sizeof(playerID)+ sizeof(roomID);
+		//문자열 size
+		
+		//리스트 size
+		size += sizeof(uint16);
+		size += dongleInfos.size() * sizeof(DongleInfo);
+		
+		return static_cast<uint16>(size);
+	}
+
+	bool Serialize(BYTE* buffer) const override
+	{
+		PacketHeader header;
+		header.packetType = PacketType::CG_SendDonglePool;
+		header.packetSize = GetDataSize();
+
+		PacketWriter pw(buffer);
+		pw << header << playerID << roomID << dongleInfos;
+		
+		return pw.GetSize() == GetDataSize();
+	}
+
+	bool Deserialize(BYTE* buffer) override
+	{
+		PacketReader pr(buffer);
+
+		PacketHeader header;
+		pr >> header >> playerID >> roomID >> dongleInfos;
 
 		return GetDataSize() == header.packetSize;
 	}

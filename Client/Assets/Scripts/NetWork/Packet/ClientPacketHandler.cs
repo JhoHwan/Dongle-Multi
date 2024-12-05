@@ -13,6 +13,13 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
         Instance = this;
     }
 
+    public override void Dispatch_GC_BroadCastDonglePool(ArraySegment<byte> _buffer)
+    {
+        GC_BroadCastDonglePool packet = new GC_BroadCastDonglePool();
+        packet.DeSerialize( _buffer );
+        Debug.Log(packet.dongleInfos[0].x);
+    }
+
     public override void Dispatch_GC_BroadCastMoveSpawner(ArraySegment<byte> _buffer)
     {
         Debug.Log("Dispatch_GC_BroadCastMoveSpawner");
@@ -61,6 +68,11 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
     }
 
     public override void Send_CG_ResponseKeepAlive(CG_ResponseKeepAlive packet)
+    {
+        SendPacket(packet);
+    }
+
+    public override void Send_CG_SendDonglePool(CG_SendDonglePool packet)
     {
         SendPacket(packet);
     }

@@ -9,7 +9,7 @@
 
 void ClientWorker(int clientId, const std::string& serverIp, int serverPort)
 {
-    for (int connectionAttempt = 0; connectionAttempt < INFINITE; ++connectionAttempt) // 최대 3번 연결 시도
+    for (int connectionAttempt = 0; connectionAttempt < 1; ++connectionAttempt) // 최대 3번 연결 시도
     {
         SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if (clientSocket == INVALID_SOCKET)
@@ -59,12 +59,12 @@ void ClientWorker(int clientId, const std::string& serverIp, int serverPort)
 
             memset(recvBuffer, 0, sizeof(recvBuffer));
         }
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
         closesocket(clientSocket);
         std::cout << "Client " << clientId << ": Disconnected after 5 messages." << std::endl;
 
         // 연결 끊고 1초 대기 후 다시 연결
-        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
