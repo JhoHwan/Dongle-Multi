@@ -40,7 +40,7 @@ public class PlayerDongleSpawner : DongleSpawnerBase
 
         packet.playerID = GameManager.Instance.PlayerID;
         packet.roomID = 0;
-        _transformSyncSender.Init(SendPacketEvent);
+        _transformSyncSender.Init(0.1f, SendPacketEvent);
 
         _nextLevel = _random.Next(0, 3);
         InGameUIManager.Instance.NextDongles[0].SetDongleImage(_nextLevel);

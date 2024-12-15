@@ -8,12 +8,14 @@ public class TransformSyncSender : MonoBehaviour
 {
     private Vector3 _previousPosition;
 
-    private const float SERVER_UPDATE_TIME = 0.1f;
-    private WaitForSeconds _sleep = new WaitForSeconds(SERVER_UPDATE_TIME);
+    private float _sendTime = 0.1f;
+    private WaitForSeconds _sleep;
 
     private Action SendEvent;
-    public void Init(Action Send)
+    public void Init(float time, Action Send)
     {
+        _sendTime = time;
+        _sleep = new WaitForSeconds(_sendTime);
         SendEvent += Send;
         _previousPosition = transform.localPosition;
         StartCoroutine(SendPositionToServerCoroutine());

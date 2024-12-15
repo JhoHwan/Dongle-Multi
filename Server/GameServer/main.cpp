@@ -12,7 +12,7 @@ void Work(shared_ptr<IOCPServer> server)
 
 int main()
 {
-	NetAddress addr(L"221.158.7.41", 7777);
+	NetAddress addr(L"127.0.0.1", 7777);
 	shared_ptr<GameServer> server 
 		= std::make_shared<GameServer>(addr, make_shared<PlayerSession>, make_shared<ServerPacketHandler>());
 	server->Start();

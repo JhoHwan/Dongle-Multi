@@ -26,7 +26,7 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
 
         GC_BroadCastMoveSpawner packet = new GC_BroadCastMoveSpawner();
         packet.DeSerialize(_buffer);
-        GameManager.Instance.CreateJob(() => { GameManager.Instance.SpawnerMove(packet); });
+        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room.SpawnerMove(packet); });
     }
 
     public override void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer)
@@ -41,6 +41,8 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
 
         GC_ResponseEnterRoom packet = new GC_ResponseEnterRoom();
         packet.DeSerialize(_buffer);
+
+        GameManager.Instance.Room.roomID = packet.roomID;
 
         if(packet.bSuccess == 0)
         {

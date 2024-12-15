@@ -11,7 +11,7 @@ public class DongleSpawnerBase : MonoBehaviour
     [SerializeField] private GameObject _line;
     protected float _dongleRadius;
 
-    protected Dongle _curDongle;
+    protected PlayerDongle _curDongle;
     
 
     public void TurnOnLine(bool turnOn)
@@ -25,10 +25,10 @@ public class DongleSpawnerBase : MonoBehaviour
         _curDongle = SpawnDongle(0);
     }
 
-    public Dongle SpawnDongle(int level)
+    public PlayerDongle SpawnDongle(int level)
     {                                                                        
         GameObject newDongle = Instantiate(_donglePrefab, transform);
-        Dongle dongle = newDongle.GetComponent<Dongle>();
+        PlayerDongle dongle = newDongle.GetComponent<PlayerDongle>();
 
         dongle.Init(level);
         _dongleRadius = dongle.GetRadius(); 

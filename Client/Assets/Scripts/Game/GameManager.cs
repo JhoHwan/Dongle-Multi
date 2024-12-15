@@ -6,34 +6,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviourSingleton<GameManager>
 {
     Queue<Action> jobQueue = new Queue<Action>();
-    public ushort PlayerID = 0;
+    public ushort PlayerID { get; set; }
 
-    [SerializeField] private PlayerDongleSpawner _playerSpawner;
-    [SerializeField] public DongleSpawner _spawner;
+    [field:SerializeField] public Room Room { get; private set; }
 
-    private int _playerScore = 0;
     public int Seed { get; private set; }
-
-    private int _player1Score;
-    public int Player1Score
-    {
-        get => _player1Score;
-        set
-        {
-            _player1Score = value;
-            InGameUIManager.Instance.ScoreBoard.SetPlayer1Socre(value);
-        }
-    }
-    private int _player2Score;
-    public int Player2Score
-    {
-        get => _player2Score;
-        set
-        {
-            _player2Score = value;
-            InGameUIManager.Instance.ScoreBoard.SetPlayer2Socre(value);
-        }
-    }
 
     public override void Awake()
     {
@@ -42,31 +19,6 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
         Application.targetFrameRate = 60;
         Application.runInBackground = true;
         Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-    }
-
-    private void Start()
-    {
-        InGameUIManager.Instance.SetPlayerNameText(1, "Player1");
-        InGameUIManager.Instance.SetPlayerNameText(2, "Player2");
-        InGameUIManager.Instance.Timer.SetTimer(300);
-        InGameUIManager.Instance.Timer.StartTimer(GameOver);
-    }
-
-    public void GameOver()
-    {
-        _playerSpawner.CanDrop = false;
-    }
-
-    public void IncreaseScore(int score)
-    {
-        _playerScore += score;
-    }
-
-    public void SpawnerMove(GC_BroadCastMoveSpawner packet)
-    {
-        if (packet.playerID == PlayerID) return;
-
-        _spawner.UpdatePosition(packet.x);
     }
 
     public void CreateJob(Action job)

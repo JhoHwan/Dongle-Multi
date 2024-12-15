@@ -3,46 +3,20 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Dongle : MonoBehaviour
+public class PlayerDongle : DongleBase
 {
-    // Components
-    private Rigidbody2D _rigidbody;
-    private CircleCollider2D _collider;
-    private Animator _animator;
-    private SpriteRenderer _spriteRenderer;
-    public GameManager GameMgr { get; set; }
-
     private bool _canDie;
-
-    private int _level;
-    public static readonly int MAX_LEVEL = 7;
-
     TransformSyncSender _syncSender;
 
-    public int Level 
-    {   
-        get => _level; 
-        private set
-        {
-            _level = Mathf.Min(value, MAX_LEVEL);
-
-            _animator.SetInteger("Level", _level);
-            SetScale();
-        }
-    }
-
-    void Awake()
+    public override void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody2D>();
-        _collider = GetComponent<CircleCollider2D>();
-        _animator = GetComponent<Animator>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        base.Awake();
         _syncSender = GetComponent<TransformSyncSender>();
     }
 
     private void Start()
     {
-        _syncSender.Init(() =>
+        _syncSender.Init(0.33f ,() =>
         {
             CG_SendDonglePool packet = new CG_SendDonglePool();
             DongleInfo info = new DongleInfo();
@@ -56,23 +30,9 @@ public class Dongle : MonoBehaviour
         });
     }
 
-    public float GetRadius()
-    {
-        float radius = transform.localScale.x * _collider.radius;
-        return radius;
-    }
-
     public void Init(int level)
     {
         Level = level;
-    }
-
-    public void SetScale()
-    {
-        Vector3 scale = transform.localScale;
-        scale.x = 0.8f + 0.4f * _level;
-        scale.y = 0.8f + 0.4f * _level;
-        transform.localScale = scale;
     }
 
     public void Drop()
@@ -86,7 +46,7 @@ public class Dongle : MonoBehaviour
         _canDie = true;
     }
 
-    public void Merge(Dongle other)
+    public void Merge(PlayerDongle other)
     {
         if(_level == MAX_LEVEL)
         {
@@ -99,7 +59,7 @@ public class Dongle : MonoBehaviour
 
         Level += 1;
 
-        GameMgr.Player1Score += (Level + 1) * (Level + 2) / 2;
+       // GameMgr.Player1Score += (Level + 1) * (Level + 2) / 2;
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -108,14 +68,14 @@ public class Dongle : MonoBehaviour
 
         _spriteRenderer.color = Color.red;
         _canDie = false;
-        GameMgr.GameOver();
+        GameManager.Instance.Room.GameOver();
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (!collision.gameObject.CompareTag("Dongle")) return;
         
-        Dongle other = collision.gameObject.GetComponent<Dongle>();
+        PlayerDongle other = collision.gameObject.GetComponent<PlayerDongle>();
         if (other.Level != _level) return;
 
         if((transform.position.y > other.transform.position.y) || 
