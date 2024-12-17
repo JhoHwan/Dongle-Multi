@@ -6,9 +6,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviourSingleton<GameManager>
 {
     Queue<Action> jobQueue = new Queue<Action>();
-    public ushort PlayerID { get; set; }
+    [field: SerializeField] public ushort PlayerID { get; set; }
 
-    [field:SerializeField] public Room Room { get; private set; }
+    [HideInInspector] public Room Room = null;
 
     public int Seed { get; private set; }
 

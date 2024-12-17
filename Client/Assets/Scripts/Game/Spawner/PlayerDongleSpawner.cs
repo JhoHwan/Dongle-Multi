@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -6,7 +7,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerDongleSpawner : DongleSpawnerBase
 {
-    [SerializeField] private float _speed; 
+    [SerializeField] private float _speed;
+
+    private bool _isStart;
 
     // 이동 관련
     private PlayerInputActions _inputActions;
@@ -15,8 +18,6 @@ public class PlayerDongleSpawner : DongleSpawnerBase
 
     // 동글 관련
     private System.Random _random;
-    private bool _canDrop = true;
-    public bool CanDrop { get => _canDrop; set => _canDrop = value; }
     private int _nextLevel;
 
     private WaitForSeconds _sleep = new WaitForSeconds(1.0f);
@@ -32,6 +33,13 @@ public class PlayerDongleSpawner : DongleSpawnerBase
     public override void Start()
     {
         base.Start();
+    }
+
+    public void StartGame()
+    {
+        _isStart = true;
+        TurnOnLine(true);
+
         _curDongle = SpawnDongle(0, Vector3.zero, 0, transform);
         _dongleMap[_curDongle.GetDongleInfo().id] = _curDongle;
 
@@ -39,6 +47,12 @@ public class PlayerDongleSpawner : DongleSpawnerBase
 
         _nextLevel = _random.Next(0, 3);
         InGameUIManager.Instance.NextDongles[0].SetDongleImage(_nextLevel);
+    }
+
+    public void EndGame()
+    {
+        _isStart = false;
+        
     }
 
     private void OnEnable()
@@ -69,7 +83,7 @@ public class PlayerDongleSpawner : DongleSpawnerBase
 
     private void Move(float value)
     {
-        if (!CanDrop) return;
+        if (!_isStart) return;
 
         float rightBorder = 5.475f - _dongleRadius;
         
@@ -83,7 +97,7 @@ public class PlayerDongleSpawner : DongleSpawnerBase
 
     public void DropDongle()
     {
-        if (!CanDrop) return;
+        if (!_isStart) return;
         
         if (_curDongle == null) return;
 
@@ -131,7 +145,6 @@ public class PlayerDongleSpawner : DongleSpawnerBase
         CG_SendDonglePool packet = new CG_SendDonglePool();
         packet.playerID = GameManager.Instance.PlayerID;
         packet.dongleInfos = new List<DongleInfo>();
-        List<ushort> keysToRemove = new List<ushort>();
 
         while (true)
         {
@@ -154,17 +167,6 @@ public class PlayerDongleSpawner : DongleSpawnerBase
                     // 현재 상태를 저장
                     _previousDongleStates[currentInfo.id] = currentInfo;
                 }
-
-                if (currentInfo.isEnable == 0)
-                {
-                    keysToRemove.Add(currentInfo.id); // 제거할 키를 저장
-                }
-            }
-
-            // 루프 이후 한꺼번에 제거
-            foreach (ushort key in keysToRemove)
-            {
-                _dongleMap.Remove(key);
             }
 
             // 상태가 변경된 동글만 서버로 전송
@@ -179,11 +181,15 @@ public class PlayerDongleSpawner : DongleSpawnerBase
     // DongleInfo 비교 함수 (필드 값 비교)
     private bool DongleInfoEquals(DongleInfo a, DongleInfo b)
     {
-        return a.id == b.id &&
-               a.x == b.x &&
-               a.y == b.y &&
-               a.level == b.level &&
-               a.rotation == b.rotation &&
-               a.isEnable == b.isEnable;
+        if(HasFloatChanged(a.x, b.x)) return false;
+        if(HasFloatChanged(a.y, b.y)) return false;
+        if(HasFloatChanged(a.rotation, b.rotation)) return false;
+        return a.level == b.level;
+    }
+
+
+    private bool HasFloatChanged(float oldRotation, float newRotation)
+    {
+        return MathF.Abs(oldRotation - newRotation) > 0.01f; // 0.01 허용 오차
     }
 }

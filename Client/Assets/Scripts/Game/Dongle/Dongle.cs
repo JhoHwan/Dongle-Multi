@@ -21,10 +21,6 @@ public class Dongle : DongleBase
         _receiver.UpdateRotation(info.rotation);
 
         Level = info.level;
-        if (info.isEnable == 0)
-        {
-            _owner.DeSpawn(this);
-        }
     }
 
     private void Update()

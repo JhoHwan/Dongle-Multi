@@ -50,7 +50,7 @@ public class DongleBase : MonoBehaviour
         IsEable = false;
         transform.parent = null;
         transform.localPosition = Vector3.zero;
-        transform.rotation = Quaternion.identity;
+        transform.eulerAngles = Vector3.zero;
         _owner.DeSpawn(this);
     }
 
@@ -79,7 +79,6 @@ public class DongleBase : MonoBehaviour
         _info.y = transform.localPosition.y;
         _info.rotation = transform.rotation.eulerAngles.z;
         _info.level = Level;
-        _info.isEnable = (byte)(IsEable ? 1 : 0);
 
         return _info;
     }

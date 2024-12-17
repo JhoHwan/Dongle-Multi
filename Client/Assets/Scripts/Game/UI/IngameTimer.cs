@@ -30,15 +30,15 @@ public class IngameTimer : MonoBehaviour
     private Color _yellow = new Color32(253, 203, 110, 255);
     private Color _red = new Color32(225, 112, 85, 255);
 
-    public void SetTimer(int startTime)
+    public void SetTimer(int startTime, Action callBack)
     {
         StartTime = startTime;
+        _callBack = callBack;
         Time = startTime;
     }
 
-    public void StartTimer(Action callBack)
+    public void StartTimer()
     {
-        _callBack = callBack;
         StartCoroutine(TimerRoutine());
     }
 

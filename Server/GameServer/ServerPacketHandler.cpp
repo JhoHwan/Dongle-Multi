@@ -56,6 +56,14 @@ void ServerPacketHandler::Dispatch_CG_RequestEnterRoom(BYTE* buffer)
     room->EnterPlayer(player);
 }
 
+void ServerPacketHandler::Dispatch_CG_PlayerReady(BYTE* buffer)
+{
+    CG_PlayerReady rp;
+    rp.Deserialize(buffer);
+    auto room = GRoomManager.GetRoom(rp.roomID);
+    room->PlayerReady(rp.playerID);
+}
+
 void ServerPacketHandler::Dispatch_CG_SendDonglePool(BYTE* buffer)
 {
     CG_SendDonglePool rp;
@@ -67,6 +75,19 @@ void ServerPacketHandler::Dispatch_CG_SendDonglePool(BYTE* buffer)
     sp.dongleInfos = rp.dongleInfos;
 
     room->BroadCast(Send_GC_BroadCastDonglePool(sp));
+}
+
+void ServerPacketHandler::Dispatch_CG_MergeDongle(BYTE* buffer)
+{
+    CG_MergeDongle rp;
+    rp.Deserialize(buffer);
+    auto room = GRoomManager.GetRoom(rp.roomID);
+    
+    GC_BroadCastMergeDongle sp;
+    sp.dongleID = rp.dongleID;
+    sp.playerID = rp.playerID;
+    auto buf = Send_GC_BroadCastMergeDongle(sp);
+    room->BroadCast(buf);
 }
 
 shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_SendPlayerInfo(GC_SendPlayerInfo& packet)
@@ -93,7 +114,47 @@ shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_ResponseEnterRoom(GC_Respons
     return sendBuffer;
 }
 
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_ExitPlayerRoom(GC_ExitPlayerRoom& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
 shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastDonglePool(GC_BroadCastDonglePool& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_ResponsePlayerReady(GC_ResponsePlayerReady& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastGameStart(GC_BroadCastGameStart& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastMergeDongle(GC_BroadCastMergeDongle& packet)
+{
+    auto sendBuffer = GSendBufferManager->Open(1024);
+    packet.Serialize(sendBuffer->Buffer());
+    sendBuffer->Close(packet.GetDataSize());
+    return sendBuffer;
+}
+
+shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastGameOver(GC_BroadCastGameOver& packet)
 {
     auto sendBuffer = GSendBufferManager->Open(1024);
     packet.Serialize(sendBuffer->Buffer());

@@ -9,6 +9,7 @@ using UnityEngine.Pool;
 public class DongleSpawner : DongleSpawnerBase
 {
     private TransformSyncReceiver _transformSyncReceiver;
+    private List<ushort> _deleteReserveID = new List<ushort>();
 
     public virtual void Awake()
     {
@@ -41,12 +42,29 @@ public class DongleSpawner : DongleSpawnerBase
 
             dongle.SetDongleInfo(dongleInfo);
         }
+
+        foreach(ushort id in _deleteReserveID)
+        {
+            Dongle dongle = (Dongle)_dongleMap[id];
+            if (dongle == null) continue;
+
+            ushort level = dongle.GetDongleInfo().level;
+            GameManager.Instance.Room.EnemyScore += (level + 1) * (level + 2) / 2;
+            dongle.DeInit();
+        }
+
+        _deleteReserveID.Clear();
     }
+
+    public void DeleteDongle(ushort id)
+    {
+        _deleteReserveID.Add(id);
+    }
+
 
     public override void DeSpawn(DongleBase dongle)
     {
         _pool.DespawnDongle(dongle);
-        _dongleMap.Remove(dongle.GetDongleInfo().id);
     }
 
     private void Update()

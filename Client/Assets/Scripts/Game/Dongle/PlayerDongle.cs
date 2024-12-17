@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerDongle : DongleBase
@@ -43,12 +40,18 @@ public class PlayerDongle : DongleBase
 
         Vector3 newPos = (other.transform.localPosition + transform.localPosition) / 2.0f;
         transform.localPosition = newPos;
-
+        int score = (Level + 1) * (Level + 2) / 2; ;
+        GameManager.Instance.Room.PlayerScore += score;
+        Debug.Log("Score : " + score);
         Level += 1;
 
-        other.DeInit();
+        CG_MergeDongle packet = new CG_MergeDongle();
+        packet.dongleID = other.GetDongleInfo().id;
+        packet.roomID = GameManager.Instance.Room.RoomID;
+        packet.playerID = GameManager.Instance.PlayerID;
 
-        // GameMgr.Player1Score += (Level + 1) * (Level + 2) / 2;
+        ClientPacketHandler.Instance.Send_CG_MergeDongle(packet);
+        other.DeInit();
     }
 
     private void OnTriggerStay2D(Collider2D collision)

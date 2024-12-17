@@ -16,7 +16,7 @@ public class DonglePool : MonoBehaviour
             actionOnRelease: OnReleaseDongle,
             actionOnDestroy: OnDestroyDongle,
             collectionCheck: false,
-            defaultCapacity: 25,
+            defaultCapacity: 30,
             maxSize: 50
         );
     }
@@ -41,7 +41,7 @@ public class DonglePool : MonoBehaviour
     private void OnDestroyDongle(DongleBase dongle)
     {
         Destroy(dongle);
-    }    
+    }
 
     public DongleBase SpawnDongle(Vector3 spawnPos, Transform parent = null)
     {

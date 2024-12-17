@@ -20,30 +20,70 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
         GC_BroadCastDonglePool packet = new GC_BroadCastDonglePool();
         packet.DeSerialize( _buffer );
         if (packet.playerID == GameManager.Instance.PlayerID) return;
-        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room._spawner.UpdateDongle(packet.dongleInfos); });
+        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room.UpdateDongle(packet.dongleInfos); });
+    }
+
+    public override void Dispatch_GC_BroadCastGameOver(ArraySegment<byte> _buffer)
+    {
+        GC_BroadCastGameOver packet = new GC_BroadCastGameOver();
+        packet.DeSerialize( _buffer );
+        GameManager.Instance.CreateJob(GameManager.Instance.Room.GameOver);
+    }
+
+    public override void Dispatch_GC_BroadCastGameStart(ArraySegment<byte> _buffer)
+    {
+        GC_BroadCastGameStart packet = new GC_BroadCastGameStart();
+        packet.DeSerialize( _buffer );
+        GameManager.Instance.CreateJob(GameManager.Instance.Room.GameStart);
+    }
+
+    public override void Dispatch_GC_BroadCastMergeDongle(ArraySegment<byte> _buffer)
+    {
+        GC_BroadCastMergeDongle packet = new GC_BroadCastMergeDongle();
+        packet.DeSerialize( _buffer );
+        if (packet.playerID == GameManager.Instance.PlayerID) return;
+
+        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room.DeleteDongle(packet.dongleID); });
     }
 
     public override void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer)
     {
-        Debug.Log("Dispatch_GC_CheckKeepAlive");
+
     }
-    
+
+    public override void Dispatch_GC_ExitPlayerRoom(ArraySegment<byte> _buffer)
+    {
+        GC_ExitPlayerRoom packet = new GC_ExitPlayerRoom();
+        packet.DeSerialize( _buffer );
+        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room.ExitRoom(packet.playerID); });
+    }
 
     public override void Dispatch_GC_ResponseEnterRoom(ArraySegment<byte> _buffer)
     {
-        Debug.Log("Dispatch_GC_ResponseEnterRoom");
-
         GC_ResponseEnterRoom packet = new GC_ResponseEnterRoom();
         packet.DeSerialize(_buffer);
-
-        GameManager.Instance.Room.roomID = packet.roomID;
 
         if(packet.bSuccess == 0)
         {
             Debug.LogError("Fail Enter Room");
             return;
         }
-        Debug.Log($"Sucess Enter Room : {packet.roomID}");
+        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room.EnterRoom(packet.playerID); });
+        foreach(ushort id in packet.playerList)
+        {
+            GameManager.Instance.CreateJob(() => { GameManager.Instance.Room.EnterRoom(id); });
+        }
+    }
+
+    public override void Dispatch_GC_ResponsePlayerReady(ArraySegment<byte> _buffer)
+    {
+        GC_ResponsePlayerReady packet = new GC_ResponsePlayerReady();
+        packet.DeSerialize(_buffer);
+
+        if (packet.playerID != GameManager.Instance.PlayerID)
+        {
+            GameManager.Instance.CreateJob(GameManager.Instance.Room.EnemyReady);
+        }
     }
 
     public override void Dispatch_GC_SendPlayerInfo(ArraySegment<byte> _buffer)
@@ -56,6 +96,16 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
         packet.playerID = GameManager.Instance.PlayerID;
         packet.roomID = 0;
         Send_CG_RequestEnterRoom(packet);
+    }
+
+    public override void Send_CG_MergeDongle(CG_MergeDongle packet)
+    {
+        SendPacket(packet);
+    }
+
+    public override void Send_CG_PlayerReady(CG_PlayerReady packet)
+    {
+        SendPacket(packet);
     }
 
     public override void Send_CG_RequestEnterRoom(CG_RequestEnterRoom packet)

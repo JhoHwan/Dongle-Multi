@@ -25,7 +25,6 @@ public class DongleSpawnerBase : MonoBehaviour
 
     public virtual void Start()
     {
-        TurnOnLine(true);
     }
 
     public virtual DongleBase SpawnDongle(ushort level, Vector3 position, float rotation, Transform parent)
@@ -42,5 +41,6 @@ public class DongleSpawnerBase : MonoBehaviour
     public virtual void DeSpawn(DongleBase dongle)
     {
         _pool.DespawnDongle(dongle);
+        _dongleMap.Remove(dongle.GetDongleInfo().id);
     }
 }
