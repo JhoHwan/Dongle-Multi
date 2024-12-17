@@ -7,6 +7,8 @@ using UnityEngine;
 public struct DongleInfo
 {
     public ushort id;
+    public ushort level;
+    public byte isEnable;
     public float x;
     public float y;
     public float rotation;

@@ -33,7 +33,7 @@ void PlayerSession::OnDisconnected()
 
 void PlayerSession::OnSend(uint32 sentBytes)
 {
-	cout << "Send Packet" << endl;
+	
 }
 
 void PlayerSession::OnRecv(uint32 recvBytes)

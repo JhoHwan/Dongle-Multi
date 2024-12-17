@@ -15,18 +15,12 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
 
     public override void Dispatch_GC_BroadCastDonglePool(ArraySegment<byte> _buffer)
     {
+        //Debug.Log("Dispatch_GC_BroadCastDonglePool");
+
         GC_BroadCastDonglePool packet = new GC_BroadCastDonglePool();
         packet.DeSerialize( _buffer );
-        Debug.Log(packet.dongleInfos[0].x);
-    }
-
-    public override void Dispatch_GC_BroadCastMoveSpawner(ArraySegment<byte> _buffer)
-    {
-        Debug.Log("Dispatch_GC_BroadCastMoveSpawner");
-
-        GC_BroadCastMoveSpawner packet = new GC_BroadCastMoveSpawner();
-        packet.DeSerialize(_buffer);
-        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room.SpawnerMove(packet); });
+        if (packet.playerID == GameManager.Instance.PlayerID) return;
+        GameManager.Instance.CreateJob(() => { GameManager.Instance.Room._spawner.UpdateDongle(packet.dongleInfos); });
     }
 
     public override void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer)
@@ -75,11 +69,6 @@ public class ClientPacketHandler : ClientPacketHandler_Generated
     }
 
     public override void Send_CG_SendDonglePool(CG_SendDonglePool packet)
-    {
-        SendPacket(packet);
-    }
-
-    public override void Send_CG_SendMoveSpawner(CG_SendMoveSpawner packet)
     {
         SendPacket(packet);
     }

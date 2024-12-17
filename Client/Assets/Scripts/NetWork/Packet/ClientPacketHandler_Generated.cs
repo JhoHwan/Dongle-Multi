@@ -20,7 +20,6 @@ public abstract class ClientPacketHandler_Generated : PacketHandler
         _dispatcher[(ushort)PacketType.GC_SendPlayerInfo] = Dispatch_GC_SendPlayerInfo;
         _dispatcher[(ushort)PacketType.GC_CheckKeepAlive] = Dispatch_GC_CheckKeepAlive;
         _dispatcher[(ushort)PacketType.GC_ResponseEnterRoom] = Dispatch_GC_ResponseEnterRoom;
-        _dispatcher[(ushort)PacketType.GC_BroadCastMoveSpawner] = Dispatch_GC_BroadCastMoveSpawner;
         _dispatcher[(ushort)PacketType.GC_BroadCastDonglePool] = Dispatch_GC_BroadCastDonglePool;
     }
 
@@ -44,15 +43,12 @@ public abstract class ClientPacketHandler_Generated : PacketHandler
     public abstract void Dispatch_GC_SendPlayerInfo(ArraySegment<byte> _buffer);
     public abstract void Dispatch_GC_CheckKeepAlive(ArraySegment<byte> _buffer);
     public abstract void Dispatch_GC_ResponseEnterRoom(ArraySegment<byte> _buffer);
-    public abstract void Dispatch_GC_BroadCastMoveSpawner(ArraySegment<byte> _buffer);
     public abstract void Dispatch_GC_BroadCastDonglePool(ArraySegment<byte> _buffer);
 
     
     public abstract void Send_CG_ResponseKeepAlive(CG_ResponseKeepAlive packet);
     
     public abstract void Send_CG_RequestEnterRoom(CG_RequestEnterRoom packet);
-    
-    public abstract void Send_CG_SendMoveSpawner(CG_SendMoveSpawner packet);
     
     public abstract void Send_CG_SendDonglePool(CG_SendDonglePool packet);
     

@@ -11,6 +11,7 @@ public class NetWorkManager : MonoBehaviourSingleton<NetWorkManager>
     public Connector _connector = new Connector();
     public string serverIP = "127.0.0.1";
     public int serverPort = 7777;
+    public float SendInterval = 0.1f;
 
     private ClientPacketHandler _handler = new ClientPacketHandler();
 

@@ -7,12 +7,16 @@ using UnityEngine;
 
 public class DongleSpawnerBase : MonoBehaviour
 {
+    [SerializeField] protected DonglePool _pool;
     [SerializeField] private GameObject _donglePrefab;
     [SerializeField] private GameObject _line;
     protected float _dongleRadius;
+    protected Dictionary<ushort, DongleBase> _dongleMap = new Dictionary<ushort, DongleBase>();
 
-    protected PlayerDongle _curDongle;
-    
+
+    protected DongleBase _curDongle;
+
+    protected ushort _curID = 0;
 
     public void TurnOnLine(bool turnOn)
     {
@@ -22,16 +26,21 @@ public class DongleSpawnerBase : MonoBehaviour
     public virtual void Start()
     {
         TurnOnLine(true);
-        _curDongle = SpawnDongle(0);
     }
 
-    public PlayerDongle SpawnDongle(int level)
-    {                                                                        
-        GameObject newDongle = Instantiate(_donglePrefab, transform);
-        PlayerDongle dongle = newDongle.GetComponent<PlayerDongle>();
-
-        dongle.Init(level);
+    public virtual DongleBase SpawnDongle(ushort level, Vector3 position, float rotation, Transform parent)
+    {
+        DongleBase dongle = _pool.SpawnDongle(position, parent);
+        dongle.SetPool(this);
+        dongle.Init(_curID++, level);
+        
         _dongleRadius = dongle.GetRadius(); 
+
         return dongle;
+    }
+
+    public virtual void DeSpawn(DongleBase dongle)
+    {
+        _pool.DespawnDongle(dongle);
     }
 }

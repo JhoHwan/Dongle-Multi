@@ -54,36 +54,6 @@
       ]
     },
     {
-      "packet_type": "CG_SendMoveSpawner",
-      "fields": [
-        {
-          "name": "playerID",
-          "type": "uint16"
-        },
-        {
-          "name": "roomID",
-          "type": "uint16"
-        },
-        {
-          "name": "x",
-          "type": "float"
-        }
-      ]
-    },
-    {
-      "packet_type": "GC_BroadCastMoveSpawner",
-      "fields": [
-        {
-          "name": "playerID",
-          "type": "uint16"
-        },
-        {
-          "name": "x",
-          "type": "float"
-        }
-      ]
-    },
-    {
       "packet_type": "CG_SendDonglePool",
       "fields": [
         {

@@ -11,8 +11,6 @@ public enum PacketType : ushort
     CG_ResponseKeepAlive,
     CG_RequestEnterRoom,
     GC_ResponseEnterRoom,
-    CG_SendMoveSpawner,
-    GC_BroadCastMoveSpawner,
     CG_SendDonglePool,
     GC_BroadCastDonglePool,
     
@@ -33,11 +31,12 @@ public class CG_ResponseKeepAlive : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size + sizeof(byte);
+        size = size + Marshal.SizeOf(typeof(byte));
         // 문자열 길이
 		
-        //리스트 길이
+        // 리스트 길이
         
+
         return (ushort)size;
     }
 
@@ -92,11 +91,12 @@ public class CG_RequestEnterRoom : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size + sizeof(ushort)+ sizeof(ushort);
+        size = size + Marshal.SizeOf(typeof(ushort))+ Marshal.SizeOf(typeof(ushort));
         // 문자열 길이
 		
-        //리스트 길이
+        // 리스트 길이
         
+
         return (ushort)size;
     }
 
@@ -138,70 +138,6 @@ public class CG_RequestEnterRoom : IPacket
     }
 }
 
-public class CG_SendMoveSpawner : IPacket
-{
-    // 고정 길이
-    public ushort playerID;
-	public ushort roomID;
-	public float x;
-	
-    // 문자열
-    
-    // 리스트
-	
-    public ushort GetDataSize()
-    {
-        int size = sizeof(ushort) + sizeof(ushort);
-        
-        // 고정 길이
-        size = size + sizeof(ushort)+ sizeof(ushort)+ sizeof(float);
-        // 문자열 길이
-		
-        //리스트 길이
-        
-        return (ushort)size;
-    }
-
-    public bool Serialize(out ArraySegment<byte> buffer)
-    {
-        PacketHeader header = new PacketHeader
-        {
-            type = PacketType.CG_SendMoveSpawner,
-            size = GetDataSize()
-        };
-
-        PacketWriter pw = new PacketWriter(header.size);
-        pw.Write(header);
-        pw.Write(playerID);
-        pw.Write(roomID);
-        pw.Write(x);
-        
-
-        if(pw.GetSize() != header.size)
-        {
-            buffer = null; 
-            return false;
-        }
-
-        buffer = pw.GetBuffer();
-        return true;
-    }
-
-    public bool DeSerialize(ArraySegment<byte> buffer)
-    {
-        PacketHeader packetHeader = new PacketHeader();
-
-        PacketReader pr = new PacketReader(buffer);
-        
-        pr.Read(ref packetHeader);
-        pr.Read(ref playerID);
-        pr.Read(ref roomID);
-        pr.Read(ref x);
-        
-        return true;
-    }
-}
-
 public class CG_SendDonglePool : IPacket
 {
     // 고정 길이
@@ -218,13 +154,14 @@ public class CG_SendDonglePool : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size + sizeof(ushort)+ sizeof(ushort);
+        size = size + Marshal.SizeOf(typeof(ushort))+ Marshal.SizeOf(typeof(ushort));
         // 문자열 길이
 		
-        //리스트 길이
+        // 리스트 길이
         size += sizeof(ushort);
-		size += dongleInfos.Count * Marshal.SizeOf(dongleInfos[0]);
+		size += dongleInfos.Count * Marshal.SizeOf(typeof(DongleInfo));
 		
+
         return (ushort)size;
     }
 
@@ -282,11 +219,12 @@ public class GC_SendPlayerInfo : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size + sizeof(byte);
+        size = size + Marshal.SizeOf(typeof(byte));
         // 문자열 길이
 		
-        //리스트 길이
+        // 리스트 길이
         
+
         return (ushort)size;
     }
 
@@ -340,11 +278,12 @@ public class GC_CheckKeepAlive : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size + sizeof(byte);
+        size = size + Marshal.SizeOf(typeof(byte));
         // 문자열 길이
 		
-        //리스트 길이
+        // 리스트 길이
         
+
         return (ushort)size;
     }
 
@@ -399,11 +338,12 @@ public class GC_ResponseEnterRoom : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size + sizeof(ushort)+ sizeof(byte);
+        size = size + Marshal.SizeOf(typeof(ushort))+ Marshal.SizeOf(typeof(byte));
         // 문자열 길이
 		
-        //리스트 길이
+        // 리스트 길이
         
+
         return (ushort)size;
     }
 
@@ -445,67 +385,6 @@ public class GC_ResponseEnterRoom : IPacket
     }
 }
 
-public class GC_BroadCastMoveSpawner : IPacket
-{
-    // 고정 길이
-    public ushort playerID;
-	public float x;
-	
-    // 문자열
-    
-    // 리스트
-	
-    public ushort GetDataSize()
-    {
-        int size = sizeof(ushort) + sizeof(ushort);
-        
-        // 고정 길이
-        size = size + sizeof(ushort)+ sizeof(float);
-        // 문자열 길이
-		
-        //리스트 길이
-        
-        return (ushort)size;
-    }
-
-    public bool Serialize(out ArraySegment<byte> buffer)
-    {
-        PacketHeader header = new PacketHeader
-        {
-            type = PacketType.GC_BroadCastMoveSpawner,
-            size = GetDataSize()
-        };
-
-        PacketWriter pw = new PacketWriter(header.size);
-        pw.Write(header);
-        pw.Write(playerID);
-        pw.Write(x);
-        
-
-        if(pw.GetSize() != header.size)
-        {
-            buffer = null; 
-            return false;
-        }
-
-        buffer = pw.GetBuffer();
-        return true;
-    }
-
-    public bool DeSerialize(ArraySegment<byte> buffer)
-    {
-        PacketHeader packetHeader = new PacketHeader();
-
-        PacketReader pr = new PacketReader(buffer);
-        
-        pr.Read(ref packetHeader);
-        pr.Read(ref playerID);
-        pr.Read(ref x);
-        
-        return true;
-    }
-}
-
 public class GC_BroadCastDonglePool : IPacket
 {
     // 고정 길이
@@ -521,13 +400,14 @@ public class GC_BroadCastDonglePool : IPacket
         int size = sizeof(ushort) + sizeof(ushort);
         
         // 고정 길이
-        size = size + sizeof(ushort);
+        size = size + Marshal.SizeOf(typeof(ushort));
         // 문자열 길이
 		
-        //리스트 길이
+        // 리스트 길이
         size += sizeof(ushort);
-		size += dongleInfos.Count * Marshal.SizeOf(dongleInfos[0]);
+		size += dongleInfos.Count * Marshal.SizeOf(typeof(DongleInfo));
 		
+
         return (ushort)size;
     }
 

@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerDongleSpawner : DongleSpawnerBase
 {
-    [SerializeField] private Transform _donglePool;
     [SerializeField] private float _speed; 
 
     // 이동 관련
@@ -21,14 +20,10 @@ public class PlayerDongleSpawner : DongleSpawnerBase
     private int _nextLevel;
 
     private WaitForSeconds _sleep = new WaitForSeconds(1.0f);
-    private WaitForSeconds _sleep1 = new WaitForSeconds(0.1f);
-    CG_SendMoveSpawner packet = new CG_SendMoveSpawner();
-
-    private TransformSyncSender _transformSyncSender;
+    private Dictionary<ushort, DongleInfo> _previousDongleStates = new Dictionary<ushort, DongleInfo>();
 
     public void Awake()
     {
-        _transformSyncSender = GetComponent<TransformSyncSender>();
         _inputActions = new PlayerInputActions();
         _spawnPosition = transform.position;
         _random = new System.Random(GameManager.Instance.Seed);
@@ -37,10 +32,10 @@ public class PlayerDongleSpawner : DongleSpawnerBase
     public override void Start()
     {
         base.Start();
+        _curDongle = SpawnDongle(0, Vector3.zero, 0, transform);
+        _dongleMap[_curDongle.GetDongleInfo().id] = _curDongle;
 
-        packet.playerID = GameManager.Instance.PlayerID;
-        packet.roomID = 0;
-        _transformSyncSender.Init(0.1f, SendPacketEvent);
+        StartCoroutine(SendDonglePoolRoutine());
 
         _nextLevel = _random.Next(0, 3);
         InGameUIManager.Instance.NextDongles[0].SetDongleImage(_nextLevel);
@@ -84,20 +79,23 @@ public class PlayerDongleSpawner : DongleSpawnerBase
         position.y = _spawnPosition.y;
 
         transform.localPosition = position;
-
-        packet.x = position.x;
     }
 
     public void DropDongle()
     {
         if (!CanDrop) return;
-
+        
         if (_curDongle == null) return;
 
         TurnOnLine(false);
 
-        _curDongle.Drop();
-        _curDongle.transform.parent = _donglePool;
+        PlayerDongle dongle = (PlayerDongle)_curDongle;
+        if (dongle == null) return;
+
+        dongle.Drop();
+        _dongleMap[dongle.GetDongleInfo().id] = dongle;
+
+        _curDongle.transform.parent = _pool.transform;
         _curDongle = null;
 
         StartCoroutine(SpawnDongleRoutine());
@@ -118,16 +116,74 @@ public class PlayerDongleSpawner : DongleSpawnerBase
     {
         yield return _sleep;
 
-        _curDongle = SpawnDongle(_nextLevel);
+        _curDongle = SpawnDongle((ushort)_nextLevel, Vector3.zero, 0, transform);
+        _dongleMap[_curDongle.GetDongleInfo().id] = _curDongle;
+
         _nextLevel = _random.Next(0, 3);
         InGameUIManager.Instance.NextDongles[0].SetDongleImage(_nextLevel);
 
         TurnOnLine(true); 
     }
 
-    private void SendPacketEvent()
+    IEnumerator SendDonglePoolRoutine()
     {
-        packet.x = transform.localPosition.x;
-        ClientPacketHandler.Instance.Send_CG_SendMoveSpawner(packet);
+        WaitForSeconds sleep = new WaitForSeconds(NetWorkManager.Instance.SendInterval);
+        CG_SendDonglePool packet = new CG_SendDonglePool();
+        packet.playerID = GameManager.Instance.PlayerID;
+        packet.dongleInfos = new List<DongleInfo>();
+        List<ushort> keysToRemove = new List<ushort>();
+
+        while (true)
+        {
+            yield return sleep;
+            if (_dongleMap.Count == 0) continue;
+
+            foreach (DongleBase dongleBase in _dongleMap.Values)
+            {
+                PlayerDongle dongle = (PlayerDongle)dongleBase;
+                DongleInfo currentInfo = dongle.GetDongleInfo();
+                if (dongle.IsDrop == false) currentInfo.x = transform.localPosition.x;
+
+                // 이전 상태와 비교
+                if (!_previousDongleStates.ContainsKey(currentInfo.id) ||
+                    !DongleInfoEquals(_previousDongleStates[currentInfo.id], currentInfo))
+                {
+                    // 상태가 변경된 경우만 패킷에 추가
+                    packet.dongleInfos.Add(currentInfo);
+
+                    // 현재 상태를 저장
+                    _previousDongleStates[currentInfo.id] = currentInfo;
+                }
+
+                if (currentInfo.isEnable == 0)
+                {
+                    keysToRemove.Add(currentInfo.id); // 제거할 키를 저장
+                }
+            }
+
+            // 루프 이후 한꺼번에 제거
+            foreach (ushort key in keysToRemove)
+            {
+                _dongleMap.Remove(key);
+            }
+
+            // 상태가 변경된 동글만 서버로 전송
+            if (packet.dongleInfos.Count > 0)
+            {
+                ClientPacketHandler.Instance.Send_CG_SendDonglePool(packet);
+                packet.dongleInfos.Clear();
+            }
+        }
+    }
+
+    // DongleInfo 비교 함수 (필드 값 비교)
+    private bool DongleInfoEquals(DongleInfo a, DongleInfo b)
+    {
+        return a.id == b.id &&
+               a.x == b.x &&
+               a.y == b.y &&
+               a.level == b.level &&
+               a.rotation == b.rotation &&
+               a.isEnable == b.isEnable;
     }
 }

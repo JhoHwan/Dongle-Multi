@@ -34,13 +34,6 @@ public class Room : MonoBehaviour
         _playerSpawner.CanDrop = false;
     }
 
-    public void SpawnerMove(GC_BroadCastMoveSpawner packet)
-    {
-        if (packet.playerID == GameManager.Instance.PlayerID) return;
-
-        _spawner.UpdatePosition(packet.x);
-    }
-
     private void StartGame()
     {
         InGameUIManager.Instance.SetPlayerNameText(1, "Player1");

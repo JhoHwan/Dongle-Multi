@@ -6,38 +6,17 @@ using UnityEngine;
 public class PlayerDongle : DongleBase
 {
     private bool _canDie;
-    TransformSyncSender _syncSender;
+    public bool IsDrop { get; set; }
 
     public override void Awake()
     {
         base.Awake();
-        _syncSender = GetComponent<TransformSyncSender>();
-    }
-
-    private void Start()
-    {
-        _syncSender.Init(0.33f ,() =>
-        {
-            CG_SendDonglePool packet = new CG_SendDonglePool();
-            DongleInfo info = new DongleInfo();
-            info.id = 0;
-            info.x = transform.localPosition.x;
-            info.y = transform.localPosition.y;
-            info.rotation = transform.localRotation.z;
-            packet.dongleInfos = new List<DongleInfo> { info };
-            packet.playerID = GameManager.Instance.PlayerID;
-            ClientPacketHandler.Instance.Send_CG_SendDonglePool(packet);
-        });
-    }
-
-    public void Init(int level)
-    {
-        Level = level;
     }
 
     public void Drop()
     {
         _rigidbody.simulated = true;
+        IsDrop = true;
         Invoke(nameof(CanDie), 1.5f);
     }
 
@@ -46,20 +25,30 @@ public class PlayerDongle : DongleBase
         _canDie = true;
     }
 
+    public override void Init(ushort id, ushort level)
+    {
+        base.Init(id, level);
+        _canDie = false;
+        _rigidbody.simulated = false;
+        IsDrop = false;
+
+    }
+
     public void Merge(PlayerDongle other)
     {
-        if(_level == MAX_LEVEL)
+        if(Level == MAX_LEVEL)
         {
             Destroy(gameObject);
         }
-        Destroy(other.gameObject);
 
-        Vector3 newPos = (other.transform.position + transform.position) / 2.0f;
-        transform.position = newPos;
+        Vector3 newPos = (other.transform.localPosition + transform.localPosition) / 2.0f;
+        transform.localPosition = newPos;
 
         Level += 1;
 
-       // GameMgr.Player1Score += (Level + 1) * (Level + 2) / 2;
+        other.DeInit();
+
+        // GameMgr.Player1Score += (Level + 1) * (Level + 2) / 2;
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -76,7 +65,7 @@ public class PlayerDongle : DongleBase
         if (!collision.gameObject.CompareTag("Dongle")) return;
         
         PlayerDongle other = collision.gameObject.GetComponent<PlayerDongle>();
-        if (other.Level != _level) return;
+        if (other.Level != Level) return;
 
         if((transform.position.y > other.transform.position.y) || 
             ((transform.position.y == other.transform.position.y) && (transform.position.x > other.transform.position.x)))
@@ -84,4 +73,6 @@ public class PlayerDongle : DongleBase
             Merge(other);
         }
     }
+
+
 }

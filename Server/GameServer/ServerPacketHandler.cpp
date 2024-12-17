@@ -56,21 +56,6 @@ void ServerPacketHandler::Dispatch_CG_RequestEnterRoom(BYTE* buffer)
     room->EnterPlayer(player);
 }
 
-void ServerPacketHandler::Dispatch_CG_SendMoveSpawner(BYTE* buffer)
-{
-    CG_SendMoveSpawner rp;
-    rp.Deserialize(buffer);
-    auto room = GRoomManager.GetRoom(rp.roomID);
-
-    GC_BroadCastMoveSpawner sp;
-    sp.playerID = rp.playerID;
-    sp.x = rp.x;
-
-    cout << rp.playerID << ": move spawner (" << rp.x << ")" << endl;
-
-    room->BroadCast(Send_GC_BroadCastMoveSpawner(sp));
-}
-
 void ServerPacketHandler::Dispatch_CG_SendDonglePool(BYTE* buffer)
 {
     CG_SendDonglePool rp;
@@ -101,14 +86,6 @@ std::shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_CheckKeepAlive(GC_Check
 }
 
 shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_ResponseEnterRoom(GC_ResponseEnterRoom& packet)
-{
-    auto sendBuffer = GSendBufferManager->Open(1024);
-    packet.Serialize(sendBuffer->Buffer());
-    sendBuffer->Close(packet.GetDataSize());
-    return sendBuffer;
-}
-
-shared_ptr<SendBuffer> ServerPacketHandler::Send_GC_BroadCastMoveSpawner(GC_BroadCastMoveSpawner& packet)
 {
     auto sendBuffer = GSendBufferManager->Open(1024);
     packet.Serialize(sendBuffer->Buffer());
