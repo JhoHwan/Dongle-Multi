@@ -5,20 +5,20 @@
 
 enum class PacketType : uint16
 {
-    GC_SendPlayerInfo,
-	GC_CheckKeepAlive,
-	CG_ResponseKeepAlive,
-	CG_RequestEnterRoom,
-	GC_ResponseEnterRoom,
-	GC_ExitPlayerRoom,
-	CG_PlayerReady,
-	GC_ResponsePlayerReady,
-	GC_BroadCastGameStart,
-	CG_SendDonglePool,
-	GC_BroadCastDonglePool,
-	CG_MergeDongle,
-	GC_BroadCastMergeDongle,
-	GC_BroadCastGameOver,
+    ,
+	,
+	,
+	,
+	,
+	,
+	,
+	,
+	,
+	,
+	,
+	,
+	,
+	,
 	
 	INVALID_PACKET,
 };
@@ -112,6 +112,101 @@ public:
 
 		PacketHeader header;
 		pr >> header >> playerID;
+
+		return GetDataSize() == header.packetSize;
+	}
+};
+
+class CG_ResponseKeepAlive : public IPacket
+{
+public:
+	//고정 길이
+	uint8 playerID;
+	
+	//문자열
+	
+	//리스트
+	
+public:
+	uint16 GetDataSize() const override
+	{
+		size_t size = sizeof(PacketHeader);
+
+		//고정 길이 size
+		size = size + sizeof(playerID);
+		//문자열 size
+		
+		//리스트 size
+		
+		return static_cast<uint16>(size);
+	}
+
+	bool Serialize(BYTE* buffer) const override
+	{
+		PacketHeader header;
+		header.packetType = PacketType::CG_ResponseKeepAlive;
+		header.packetSize = GetDataSize();
+
+		PacketWriter pw(buffer);
+		pw << header << playerID;
+		
+		return pw.GetSize() == GetDataSize();
+	}
+
+	bool Deserialize(BYTE* buffer) override
+	{
+		PacketReader pr(buffer);
+
+		PacketHeader header;
+		pr >> header >> playerID;
+
+		return GetDataSize() == header.packetSize;
+	}
+};
+
+class CG_RequestEnterRoom : public IPacket
+{
+public:
+	//고정 길이
+	uint16 playerID;
+	uint16 roomID;
+	
+	//문자열
+	
+	//리스트
+	
+public:
+	uint16 GetDataSize() const override
+	{
+		size_t size = sizeof(PacketHeader);
+
+		//고정 길이 size
+		size = size + sizeof(playerID)+ sizeof(roomID);
+		//문자열 size
+		
+		//리스트 size
+		
+		return static_cast<uint16>(size);
+	}
+
+	bool Serialize(BYTE* buffer) const override
+	{
+		PacketHeader header;
+		header.packetType = PacketType::CG_RequestEnterRoom;
+		header.packetSize = GetDataSize();
+
+		PacketWriter pw(buffer);
+		pw << header << playerID << roomID;
+		
+		return pw.GetSize() == GetDataSize();
+	}
+
+	bool Deserialize(BYTE* buffer) override
+	{
+		PacketReader pr(buffer);
+
+		PacketHeader header;
+		pr >> header >> playerID >> roomID;
 
 		return GetDataSize() == header.packetSize;
 	}
@@ -217,6 +312,54 @@ public:
 	}
 };
 
+class CG_PlayerReady : public IPacket
+{
+public:
+	//고정 길이
+	uint16 roomID;
+	uint16 playerID;
+	
+	//문자열
+	
+	//리스트
+	
+public:
+	uint16 GetDataSize() const override
+	{
+		size_t size = sizeof(PacketHeader);
+
+		//고정 길이 size
+		size = size + sizeof(roomID)+ sizeof(playerID);
+		//문자열 size
+		
+		//리스트 size
+		
+		return static_cast<uint16>(size);
+	}
+
+	bool Serialize(BYTE* buffer) const override
+	{
+		PacketHeader header;
+		header.packetType = PacketType::CG_PlayerReady;
+		header.packetSize = GetDataSize();
+
+		PacketWriter pw(buffer);
+		pw << header << roomID << playerID;
+		
+		return pw.GetSize() == GetDataSize();
+	}
+
+	bool Deserialize(BYTE* buffer) override
+	{
+		PacketReader pr(buffer);
+
+		PacketHeader header;
+		pr >> header >> roomID >> playerID;
+
+		return GetDataSize() == header.packetSize;
+	}
+};
+
 class GC_ResponsePlayerReady : public IPacket
 {
 public:
@@ -311,6 +454,57 @@ public:
 	}
 };
 
+class CG_SendDonglePool : public IPacket
+{
+public:
+	//고정 길이
+	uint16 playerID;
+	uint16 roomID;
+	
+	//문자열
+	
+	//리스트
+	vector<DongleInfo> dongleInfos;
+	
+public:
+	uint16 GetDataSize() const override
+	{
+		size_t size = sizeof(PacketHeader);
+
+		//고정 길이 size
+		size = size + sizeof(playerID)+ sizeof(roomID);
+		//문자열 size
+		
+		//리스트 size
+		size += sizeof(uint16);
+		size += dongleInfos.size() * sizeof(DongleInfo);
+		
+		return static_cast<uint16>(size);
+	}
+
+	bool Serialize(BYTE* buffer) const override
+	{
+		PacketHeader header;
+		header.packetType = PacketType::CG_SendDonglePool;
+		header.packetSize = GetDataSize();
+
+		PacketWriter pw(buffer);
+		pw << header << playerID << roomID << dongleInfos;
+		
+		return pw.GetSize() == GetDataSize();
+	}
+
+	bool Deserialize(BYTE* buffer) override
+	{
+		PacketReader pr(buffer);
+
+		PacketHeader header;
+		pr >> header >> playerID >> roomID >> dongleInfos;
+
+		return GetDataSize() == header.packetSize;
+	}
+};
+
 class GC_BroadCastDonglePool : public IPacket
 {
 public:
@@ -356,6 +550,55 @@ public:
 
 		PacketHeader header;
 		pr >> header >> playerID >> dongleInfos;
+
+		return GetDataSize() == header.packetSize;
+	}
+};
+
+class CG_MergeDongle : public IPacket
+{
+public:
+	//고정 길이
+	uint16 playerID;
+	uint16 roomID;
+	uint16 dongleID;
+	
+	//문자열
+	
+	//리스트
+	
+public:
+	uint16 GetDataSize() const override
+	{
+		size_t size = sizeof(PacketHeader);
+
+		//고정 길이 size
+		size = size + sizeof(playerID)+ sizeof(roomID)+ sizeof(dongleID);
+		//문자열 size
+		
+		//리스트 size
+		
+		return static_cast<uint16>(size);
+	}
+
+	bool Serialize(BYTE* buffer) const override
+	{
+		PacketHeader header;
+		header.packetType = PacketType::CG_MergeDongle;
+		header.packetSize = GetDataSize();
+
+		PacketWriter pw(buffer);
+		pw << header << playerID << roomID << dongleID;
+		
+		return pw.GetSize() == GetDataSize();
+	}
+
+	bool Deserialize(BYTE* buffer) override
+	{
+		PacketReader pr(buffer);
+
+		PacketHeader header;
+		pr >> header >> playerID >> roomID >> dongleID;
 
 		return GetDataSize() == header.packetSize;
 	}
@@ -450,249 +693,6 @@ public:
 
 		PacketHeader header;
 		pr >> header;
-
-		return GetDataSize() == header.packetSize;
-	}
-};
-
-class CG_ResponseKeepAlive : public IPacket
-{
-public:
-	//고정 길이
-	uint8 playerID;
-	
-	//문자열
-	
-	//리스트
-	
-public:
-	uint16 GetDataSize() const override
-	{
-		size_t size = sizeof(PacketHeader);
-
-		//고정 길이 size
-		size = size + sizeof(playerID);
-		//문자열 size
-		
-		//리스트 size
-		
-		return static_cast<uint16>(size);
-	}
-
-	bool Serialize(BYTE* buffer) const override
-	{
-		PacketHeader header;
-		header.packetType = PacketType::CG_ResponseKeepAlive;
-		header.packetSize = GetDataSize();
-
-		PacketWriter pw(buffer);
-		pw << header << playerID;
-		
-		return pw.GetSize() == GetDataSize();
-	}
-
-	bool Deserialize(BYTE* buffer) override
-	{
-		PacketReader pr(buffer);
-
-		PacketHeader header;
-		pr >> header >> playerID;
-
-		return GetDataSize() == header.packetSize;
-	}
-};
-
-class CG_RequestEnterRoom : public IPacket
-{
-public:
-	//고정 길이
-	uint16 playerID;
-	uint16 roomID;
-	
-	//문자열
-	
-	//리스트
-	
-public:
-	uint16 GetDataSize() const override
-	{
-		size_t size = sizeof(PacketHeader);
-
-		//고정 길이 size
-		size = size + sizeof(playerID)+ sizeof(roomID);
-		//문자열 size
-		
-		//리스트 size
-		
-		return static_cast<uint16>(size);
-	}
-
-	bool Serialize(BYTE* buffer) const override
-	{
-		PacketHeader header;
-		header.packetType = PacketType::CG_RequestEnterRoom;
-		header.packetSize = GetDataSize();
-
-		PacketWriter pw(buffer);
-		pw << header << playerID << roomID;
-		
-		return pw.GetSize() == GetDataSize();
-	}
-
-	bool Deserialize(BYTE* buffer) override
-	{
-		PacketReader pr(buffer);
-
-		PacketHeader header;
-		pr >> header >> playerID >> roomID;
-
-		return GetDataSize() == header.packetSize;
-	}
-};
-
-class CG_PlayerReady : public IPacket
-{
-public:
-	//고정 길이
-	uint16 roomID;
-	uint16 playerID;
-	
-	//문자열
-	
-	//리스트
-	
-public:
-	uint16 GetDataSize() const override
-	{
-		size_t size = sizeof(PacketHeader);
-
-		//고정 길이 size
-		size = size + sizeof(roomID)+ sizeof(playerID);
-		//문자열 size
-		
-		//리스트 size
-		
-		return static_cast<uint16>(size);
-	}
-
-	bool Serialize(BYTE* buffer) const override
-	{
-		PacketHeader header;
-		header.packetType = PacketType::CG_PlayerReady;
-		header.packetSize = GetDataSize();
-
-		PacketWriter pw(buffer);
-		pw << header << roomID << playerID;
-		
-		return pw.GetSize() == GetDataSize();
-	}
-
-	bool Deserialize(BYTE* buffer) override
-	{
-		PacketReader pr(buffer);
-
-		PacketHeader header;
-		pr >> header >> roomID >> playerID;
-
-		return GetDataSize() == header.packetSize;
-	}
-};
-
-class CG_SendDonglePool : public IPacket
-{
-public:
-	//고정 길이
-	uint16 playerID;
-	uint16 roomID;
-	
-	//문자열
-	
-	//리스트
-	vector<DongleInfo> dongleInfos;
-	
-public:
-	uint16 GetDataSize() const override
-	{
-		size_t size = sizeof(PacketHeader);
-
-		//고정 길이 size
-		size = size + sizeof(playerID)+ sizeof(roomID);
-		//문자열 size
-		
-		//리스트 size
-		size += sizeof(uint16);
-		size += dongleInfos.size() * sizeof(DongleInfo);
-		
-		return static_cast<uint16>(size);
-	}
-
-	bool Serialize(BYTE* buffer) const override
-	{
-		PacketHeader header;
-		header.packetType = PacketType::CG_SendDonglePool;
-		header.packetSize = GetDataSize();
-
-		PacketWriter pw(buffer);
-		pw << header << playerID << roomID << dongleInfos;
-		
-		return pw.GetSize() == GetDataSize();
-	}
-
-	bool Deserialize(BYTE* buffer) override
-	{
-		PacketReader pr(buffer);
-
-		PacketHeader header;
-		pr >> header >> playerID >> roomID >> dongleInfos;
-
-		return GetDataSize() == header.packetSize;
-	}
-};
-
-class CG_MergeDongle : public IPacket
-{
-public:
-	//고정 길이
-	uint16 playerID;
-	uint16 roomID;
-	uint16 dongleID;
-	
-	//문자열
-	
-	//리스트
-	
-public:
-	uint16 GetDataSize() const override
-	{
-		size_t size = sizeof(PacketHeader);
-
-		//고정 길이 size
-		size = size + sizeof(playerID)+ sizeof(roomID)+ sizeof(dongleID);
-		//문자열 size
-		
-		//리스트 size
-		
-		return static_cast<uint16>(size);
-	}
-
-	bool Serialize(BYTE* buffer) const override
-	{
-		PacketHeader header;
-		header.packetType = PacketType::CG_MergeDongle;
-		header.packetSize = GetDataSize();
-
-		PacketWriter pw(buffer);
-		pw << header << playerID << roomID << dongleID;
-		
-		return pw.GetSize() == GetDataSize();
-	}
-
-	bool Deserialize(BYTE* buffer) override
-	{
-		PacketReader pr(buffer);
-
-		PacketHeader header;
-		pr >> header >> playerID >> roomID >> dongleID;
 
 		return GetDataSize() == header.packetSize;
 	}

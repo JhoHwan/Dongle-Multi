@@ -28,11 +28,15 @@
     <Folder Include="Template\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.json" />
+    <Content Include="Define\Struct.json" />
     <Content Include="Define\Packet.json" />
     <Content Include="Template\Template-PacketHandler.cs.jinja2" />
     <Content Include="Template\Template-Packet.cs.jinja2" />
     <Content Include="Template\Template-Packet.h.jinja2" />
     <Content Include="Template\Template-PacketHandler.h.jinja2" />
+    <Content Include="Template\Template-Structs.cs.jinja2" />
+    <Content Include="Template\Template-Structs.h.jinja2" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

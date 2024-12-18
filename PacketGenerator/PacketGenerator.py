@@ -1,117 +1,107 @@
-import argparse
+﻿import argparse
 import json
 import os
 from jinja2 import Template
 
-def filter_packets_by_target(packet_data, target):
-    recv_packet_data = []
-    send_packet_data = []
-    for packet in packet_data:
-        packet_type = packet['packet_type']
-        if packet_type[0] == target:
-            send_packet_data.append(packet)
-        elif packet_type[1] == target:
-            recv_packet_data.append(packet)
+class PacketGenerator:
+    def __init__(self, config_path):
+        with open(config_path, 'r') as f:
+            self.config = json.load(f)
 
-    return send_packet_data, recv_packet_data;
+    def load_template(self, lang, template_type):
+        template_path = self.config["templates"][lang][template_type]
+        with open(template_path, 'r') as f:
+            return Template(f.read())
 
-def ConvertTypeToCSharp(packet_data):
-    c_type_to_csharp = {
-    "BYTE": "byte",
-    "int8": "sbyte",
-    "int16": "short",
-    "int32": "int",
-    "int64": "long",
-    "uint8": "byte",
-    "uint16": "ushort",
-    "uint32": "uint",
-    "uint64": "ulong",
-    "wchar": "char",
-    "wstring" : "string",
-    }
+    def convert_types(self, data, lang):
+        type_mappings = {
+            "csharp": {
+                "BYTE": "byte",
+                "int8": "sbyte",
+                "int16": "short",
+                "int32": "int",
+                "int64": "long",
+                "uint8": "byte",
+                "uint16": "ushort",
+                "uint32": "uint",
+                "uint64": "ulong",
+                "wchar": "char",
+                "wstring": "string",
+            },
+            # Add more language mappings here if needed
+        }
+        mapping = type_mappings.get(lang, {})
+        for item in data:
+            for field in item["fields"]:
+                field["type"] = mapping.get(field["type"], field["type"])
+        return data
 
-    for packet in packet_data:
-        for field in packet['fields']:
-            cpp_type = field['type']
-        
-            # Convert to C# type using the dictionary
-            csharp_type = c_type_to_csharp.get(cpp_type, cpp_type)  # Default to "unknown" if type not found
-            field['type'] = csharp_type;
-    return;
+    def generate_code(self, lang, packet_data, struct_data, output_dir):
+        # Load templates
+        packet_template = self.load_template(lang, "packet")
+        struct_template = self.load_template(lang, "struct")
+        handler_template = self.load_template(lang, "handler")
 
-def CSharpGenerator(args, parse_data):
-    packet_data = parse_data['packets']
-    ConvertTypeToCSharp(packet_data)
+        # Convert types
+        self.convert_types(packet_data, lang)
+        self.convert_types(struct_data, lang)
 
-    with open("Template/Template-Packet.cs.jinja2", "r") as template_file:
-        packet_template_file = template_file.read()
+        # Generate packets
+        send_packet_data, recv_packet_data = self.filter_packets_by_target(packet_data, lang)
+        packet_code = packet_template.render(packets=packet_data, types=[p["packet_type"] for p in packet_data])
+        handler_code = handler_template.render(send_packets=send_packet_data, recv_packets=recv_packet_data)
 
-    with open("Template/Template-PacketHandler.cs.jinja2", "r") as template_file:
-        handler_template_file = template_file.read()
+        # Generate structs
+        struct_code = struct_template.render(structs=struct_data)
 
-    send_packet_data, recv_packet_data = filter_packets_by_target(packet_data, args.target)
+        # Ensure output directory exists
+        os.makedirs(output_dir, exist_ok=True)
 
-    path = os.path.join(args.output, args.packet + '.cs')
-    packet_template = Template(packet_template_file)
-    packet_code = packet_template.render(types = packet_data, packets = send_packet_data + recv_packet_data)
-    with open(path, "w") as packet_file:
-        packet_file.write(packet_code)
+        # Save outputs
+        with open(os.path.join(output_dir, self.config["output"][lang]["packet"]), 'w') as f:
+            f.write(packet_code)
+        with open(os.path.join(output_dir, self.config["output"][lang]["handler"]), 'w') as f:
+            f.write(handler_code)
+        with open(os.path.join(output_dir, self.config["output"][lang]["struct"]), 'w') as f:
+            f.write(struct_code)
 
-    handler_template = Template(handler_template_file)
-    handler_code = handler_template.render(class_name = args.handler, recvs = recv_packet_data, sends = send_packet_data)
-    
-    path = os.path.join(args.output, args.handler + '_Generated.cs')
-    with open(path, "w") as packet_file:
-        packet_file.write(handler_code)
-
-    return
-
-def CPPGenerator(args, parse_data):
-    packet_data = parse_data['packets']
-
-    with open("Template/Template-Packet.h.jinja2", "r") as template_file:
-        packet_template_file = template_file.read()
-
-    with open("Template/Template-PacketHandler.h.jinja2", "r") as template_file:
-        handler_template_file = template_file.read()
-
-    send_packet_data, recv_packet_data = filter_packets_by_target(packet_data, args.target)
+        print(f"{lang.upper()} code generated in {output_dir}")
 
 
-    path = os.path.join(args.output, args.packet + '.h')
-    packet_template = Template(packet_template_file)
-    packet_code = packet_template.render(types = packet_data, packets = send_packet_data + recv_packet_data)
-    with open(path, "w") as packet_file:
-        packet_file.write(packet_code)
-
-    handler_template = Template(handler_template_file)
-    handler_code = handler_template.render(class_name = args.handler, recvs = recv_packet_data, sends = send_packet_data)
-    
-    path = os.path.join(args.output, args.handler + '.h')
-    with open(path, "w") as packet_file:
-        packet_file.write(handler_code)
-
-    return;
+    @staticmethod
+    def filter_packets_by_target(packet_data, target):
+        recv_packet_data = []
+        send_packet_data = []
+        for packet in packet_data:
+            packet_type = packet["packet_type"]
+            if packet_type.startswith(target):
+                send_packet_data.append(packet)
+            elif packet_type.endswith(target):
+                recv_packet_data.append(packet)
+        return send_packet_data, recv_packet_data
 
 def main():
-    arg_parser = argparse.ArgumentParser(description="PacketGenerator")
-    arg_parser.add_argument('--type', type=str, default='cpp', help="out put file type")
-    arg_parser.add_argument('--input', type=str, default='Define/Packet.json', help="json path")
-    arg_parser.add_argument('--output', type=str, default='../GameServer/', help="output packet file name")
-    arg_parser.add_argument('--packet', type=str, default='Packet', help="output packet file name")
-    arg_parser.add_argument('--handler', type=str, default='ServerPacketHandler', help="output packet handler name")
-    arg_parser.add_argument('--target', type=str, default='G', help="recv convention")
-    args = arg_parser.parse_args()
+    # 명령행 인자 정의
+    parser = argparse.ArgumentParser(description="Packet and Struct Code Generator")
+    parser.add_argument("--config", required=True, help="Path to the configuration JSON file")
+    parser.add_argument("--packet", required=True, help="Path to the packet definition JSON file")
+    parser.add_argument("--struct", required=True, help="Path to the struct definition JSON file")
+    parser.add_argument("--lang", required=True, choices=["csharp", "cpp"], help="Target language for code generation")
+    parser.add_argument("--output", required=True, help="Output directory for generated code")
+    args = parser.parse_args()
 
-    with open(args.input, "r") as file:
-        parse_data = json.load(file)
+    # 패킷 데이터 읽기
+    with open(args.packet, 'r') as f:
+        packet_data = json.load(f).get("packets", [])
 
-    if args.type == 'cpp':
-        CPPGenerator(args, parse_data)
-    elif args.type == 'cs':
-        CSharpGenerator(args, parse_data)
+    # 구조체 데이터 읽기
+    with open(args.struct, 'r') as f:
+        struct_data = json.load(f).get("structs", [])
 
-    return
+    # PacketGenerator 초기화 및 코드 생성
+    generator = PacketGenerator(args.config)
+    generator.generate_code(args.lang, packet_data, struct_data, args.output)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
