@@ -33,7 +33,9 @@ public:
     void DeleteSession(std::shared_ptr<Session> session);
 
     // 이벤트 디스패처
-    void Dispatch();
+    void DispatchIocpEvent(uint16);
+    void DispatchJob(uint16);
+    void Dispatch(uint16 iocpDispatchTime, uint16 jobDispatchTime);
 
     // Getter
     inline const NetAddress& GetAddress() const { return _address; }

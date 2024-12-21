@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum PacketType : ushort
 {
-    {% for packet in types %}{{ packet.packet_type }},
+    {% for packet in packets %}{{ packet.packet_type }},
     {% endfor %}
     INVALID_PACKET
 }

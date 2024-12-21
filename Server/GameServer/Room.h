@@ -2,7 +2,7 @@
 
 class Room;
 
-class Room : public enable_shared_from_this<Room>
+class Room : public JobQueue
 {
 public:
 	enum State
@@ -24,6 +24,8 @@ public:
 
 	void PlayerReady(uint16 playerID);
 	void GameStart();
+
+	inline shared_ptr<Room> GetSharedPtr() { return static_pointer_cast<Room>(shared_from_this()); }
 
 private:
 	State _state;

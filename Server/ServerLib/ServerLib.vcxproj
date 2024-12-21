@@ -154,6 +154,9 @@
     <ClInclude Include="CoreTLS.h" />
     <ClInclude Include="IOCPEvent.h" />
     <ClInclude Include="IOCPServer.h" />
+    <ClInclude Include="Job.h" />
+    <ClInclude Include="JobManager.h" />
+    <ClInclude Include="JobQueue.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="NetAddress.h" />
     <ClInclude Include="IPacket.h" />
@@ -173,6 +176,9 @@
     <ClCompile Include="CoreTLS.cpp" />
     <ClCompile Include="IOCPEvent.cpp" />
     <ClCompile Include="IOCPServer.cpp" />
+    <ClCompile Include="Job.cpp" />
+    <ClCompile Include="JobManager.cpp" />
+    <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="NetAddress.cpp" />
     <ClCompile Include="IPacket.cpp" />

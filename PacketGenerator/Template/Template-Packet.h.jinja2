@@ -5,7 +5,7 @@
 
 enum class PacketType : uint16
 {
-    {% for packet in types %}{{ packet.packet_type }},
+    {% for packet in packets %}{{ packet.packet_type }},
 	{% endfor %}
 	INVALID_PACKET,
 };

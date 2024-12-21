@@ -90,12 +90,12 @@ bool IOCPServer::RegisterSocket(SOCKET socket)
     return Register(reinterpret_cast<HANDLE>(socket));
 }
 
-void IOCPServer::Dispatch()
+void IOCPServer::DispatchIocpEvent(uint16 time)
 {
     DWORD lpNumberOfBytes;
     IOCPEvent* iocpEvent = nullptr;
     ULONG_PTR key = 0;
-    if (::GetQueuedCompletionStatus(_iocpHandle, &lpNumberOfBytes, &key, reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), INFINITE))
+    if (::GetQueuedCompletionStatus(_iocpHandle, &lpNumberOfBytes, &key, reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), static_cast<DWORD>(time)))
     {
         EventType eventType = iocpEvent->GetEventType();
         if (eventType == EventType::Accept)
@@ -105,9 +105,39 @@ void IOCPServer::Dispatch()
     }
     else
     {
+        if (GetLastError() == WAIT_TIMEOUT) return;
         EventType eventType = iocpEvent->GetEventType();
         iocpEvent->session->Dispatch(iocpEvent, static_cast<uint32>(lpNumberOfBytes));
     }
+}
+
+void IOCPServer::DispatchJob(uint16 time)
+{
+    auto endTime = chrono::system_clock::now() + chrono::milliseconds(time);
+
+    while (true)
+    {
+        auto jobQueue = GJobManager->Pop();
+        if (jobQueue == nullptr) return;
+
+        if (jobQueue->TryExcute() == false)
+        {
+            GJobManager->Push(jobQueue); // 이미 다른 쓰레드에서 작업중이면 다시 반환
+        }
+
+        auto curTime = chrono::system_clock::now();
+        if (curTime >= endTime) // 한 개의 JobQueue작업 후 시간이 초과했으면 리턴
+        {
+            return;
+        }
+    }
+}
+
+void IOCPServer::Dispatch(uint16 iocpDispatchTime, uint16 jobDispatchTime)
+{
+    DispatchIocpEvent(iocpDispatchTime);
+
+    DispatchJob(jobDispatchTime);
 }
 
 void IOCPServer::AddSession(shared_ptr<Session> session)

@@ -8,7 +8,7 @@ Room::Room(uint16 id) : _id(id), _playerCount(0), _readyCount(0), _state(State::
 
 void Room::EnterPlayer(shared_ptr<PlayerSession> player)
 {
-	player->SetRoom(shared_from_this());
+	player->SetRoom(GetSharedPtr());
 	_players.insert(player);
 	_playerCount++;
 
@@ -31,7 +31,7 @@ void Room::ExitPlayer(shared_ptr<PlayerSession> player)
 	_playerCount--;
 	if (_playerCount <= 0)
 	{
-		//GRoomManager.ReleaseRoom(shared_from_this());
+		//GRoomManager.ReleaseRoom(GetSharedPtr);
 	}
 
 	GC_ExitPlayerRoom packet;

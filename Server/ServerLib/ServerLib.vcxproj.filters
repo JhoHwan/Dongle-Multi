@@ -4,6 +4,9 @@
     <Filter Include="NetWork">
       <UniqueIdentifier>{95d053e9-6175-4404-9107-282448c7f46c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Job">
+      <UniqueIdentifier>{1968b257-ce8c-4021-aca5-b6a898bd26e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -43,6 +46,13 @@
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="IPacket.h" />
+    <ClInclude Include="Job.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="JobQueue.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="JobManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -81,5 +91,12 @@
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="IPacket.cpp" />
+    <ClCompile Include="Job.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="JobQueue.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="JobManager.cpp" />
   </ItemGroup>
 </Project>

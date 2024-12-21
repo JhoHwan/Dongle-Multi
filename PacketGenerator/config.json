@@ -14,7 +14,7 @@
   "output": {
     "csharp": {
       "packet": "Packet.cs",
-      "handler": "ClientPacketHandler.cs",
+      "handler": "ClientPacketHandler_Generated.cs",
       "struct": "Structs.cs"
     },
     "cpp": {

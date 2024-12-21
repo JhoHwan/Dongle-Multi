@@ -6,20 +6,20 @@ using UnityEngine;
 
 public enum PacketType : ushort
 {
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
-    ,
+    GC_SendPlayerInfo,
+    GC_CheckKeepAlive,
+    CG_ResponseKeepAlive,
+    CG_RequestEnterRoom,
+    GC_ResponseEnterRoom,
+    GC_ExitPlayerRoom,
+    CG_PlayerReady,
+    GC_ResponsePlayerReady,
+    GC_BroadCastGameStart,
+    CG_SendDonglePool,
+    GC_BroadCastDonglePool,
+    CG_MergeDongle,
+    GC_BroadCastMergeDongle,
+    GC_BroadCastGameOver,
     
     INVALID_PACKET
 }

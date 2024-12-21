@@ -6,7 +6,7 @@ void Work(shared_ptr<IOCPServer> server)
 {
 	while (1)
 	{
-		server->Dispatch();
+		server->Dispatch(10, 10);
 	}
 }
 
@@ -24,8 +24,6 @@ int main()
 	{
 		threads.emplace_back(Work, server);
 	}
-
-	
 
 	while (true) {}
 

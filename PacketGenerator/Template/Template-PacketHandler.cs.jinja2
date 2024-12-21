@@ -5,11 +5,11 @@ using UnityEngine;
 
 public delegate void PacketDispatcher(ArraySegment<byte> _buffer);
 
-public abstract class {{ class_name }}_Generated : PacketHandler
+public abstract class {{ class_name }} : PacketHandler
 {
     private PacketDispatcher[] _dispatcher = new PacketDispatcher[(ushort)PacketType.INVALID_PACKET];
 
-    public {{ class_name }}_Generated()
+    public {{ class_name }}()
     {
         for (int i = 0; i < _dispatcher.Length; i++)
         {

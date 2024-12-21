@@ -16,6 +16,7 @@
 #include <functional>
 #include <limits>
 #include <shared_mutex>
+#include <chrono>
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -34,6 +35,9 @@ using namespace std;
 #include "SendBufferManager.h"
 #include "IOCPServer.h"
 #include "RecvBuffer.h"
+#include "Job.h"
+#include "JobQueue.h"
+#include "JobManager.h"
 
 #include "CoreTLS.h"
 #include "CoreGlobal.h"

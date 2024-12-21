@@ -36,7 +36,7 @@ class PacketGenerator:
                 field["type"] = mapping.get(field["type"], field["type"])
         return data
 
-    def generate_code(self, lang, packet_data, struct_data, output_dir):
+    def generate_code(self, lang, packet_data, struct_data, output_dir, target):
         # Load templates
         packet_template = self.load_template(lang, "packet")
         struct_template = self.load_template(lang, "struct")
@@ -47,9 +47,9 @@ class PacketGenerator:
         self.convert_types(struct_data, lang)
 
         # Generate packets
-        send_packet_data, recv_packet_data = self.filter_packets_by_target(packet_data, lang)
-        packet_code = packet_template.render(packets=packet_data, types=[p["packet_type"] for p in packet_data])
-        handler_code = handler_template.render(send_packets=send_packet_data, recv_packets=recv_packet_data)
+        send_packet_data, recv_packet_data = self.filter_packets_by_target(packet_data, target)
+        packet_code = packet_template.render(packets=packet_data)
+        handler_code = handler_template.render(sends=send_packet_data, recvs=recv_packet_data, class_name=self.config["output"][lang]["handler"].split('.', 1)[0])
 
         # Generate structs
         struct_code = struct_template.render(structs=struct_data)
@@ -74,20 +74,21 @@ class PacketGenerator:
         send_packet_data = []
         for packet in packet_data:
             packet_type = packet["packet_type"]
-            if packet_type.startswith(target):
+            if packet_type[0] == target:
                 send_packet_data.append(packet)
-            elif packet_type.endswith(target):
+            elif packet_type[1] == target:
                 recv_packet_data.append(packet)
         return send_packet_data, recv_packet_data
 
 def main():
     # 명령행 인자 정의
     parser = argparse.ArgumentParser(description="Packet and Struct Code Generator")
-    parser.add_argument("--config", required=True, help="Path to the configuration JSON file")
-    parser.add_argument("--packet", required=True, help="Path to the packet definition JSON file")
-    parser.add_argument("--struct", required=True, help="Path to the struct definition JSON file")
-    parser.add_argument("--lang", required=True, choices=["csharp", "cpp"], help="Target language for code generation")
-    parser.add_argument("--output", required=True, help="Output directory for generated code")
+    parser.add_argument("--config", default="config.json", help="Path to the configuration JSON file")
+    parser.add_argument("--packet", default="./Define/Packet.json", help="Path to the packet definition JSON file")
+    parser.add_argument("--struct", default="./Define/Struct.json", help="Path to the struct definition JSON file")
+    parser.add_argument("--lang", default="cpp", choices=["csharp", "cpp"], help="Target language for code generation")
+    parser.add_argument("--target", default="G")
+    parser.add_argument("--output", default="../Server/GameServer", help="Output directory for generated code")
     args = parser.parse_args()
 
     # 패킷 데이터 읽기
@@ -100,7 +101,7 @@ def main():
 
     # PacketGenerator 초기화 및 코드 생성
     generator = PacketGenerator(args.config)
-    generator.generate_code(args.lang, packet_data, struct_data, args.output)
+    generator.generate_code(args.lang, packet_data, struct_data, args.output, args.target)
 
 
 if __name__ == "__main__":
