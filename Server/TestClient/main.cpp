@@ -77,7 +77,7 @@ int main()
         return 1;
     }
 
-    const std::string serverIp = "221.158.7.41"; // 서버 IP
+    const std::string serverIp = "127.0.0.1"; // 서버 IP
     const int serverPort = 7777;             // 서버 포트
     const int clientCount = 100;               // 생성할 클라이언트 수
 

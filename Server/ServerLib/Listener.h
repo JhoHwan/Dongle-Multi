@@ -3,7 +3,7 @@
 class IOCPServer;
 class AcceptEvent;
 
-class Listener
+class Listener : public IOCPObject
 {
 public:
     // 생성자 및 소멸자
@@ -15,6 +15,8 @@ public:
     void RegisterAccept(AcceptEvent* acceptEvent);
     void ProcessAccept(AcceptEvent* acceptEvent);
 
+    void Dispatch(IOCPEvent* iocpEvent, int32 numOfBytes) override;
+
     // Getter
     inline const SOCKET& GetSocket() const { return _socket; }
 
@@ -23,4 +25,6 @@ private:
     std::shared_ptr<IOCPServer> _server;
     std::vector<AcceptEvent> _acceptEvents; 
     SOCKET _socket = {};
+
+
 };

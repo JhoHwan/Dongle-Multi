@@ -20,6 +20,7 @@ private:
 	uint16 _id;
     static IDGenerator _idGenerator;
 
+	std::shared_ptr<IOCPServer> _server;
 	std::shared_ptr<Room> _room;
 };
 

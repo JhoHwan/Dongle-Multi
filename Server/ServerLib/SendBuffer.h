@@ -1,22 +1,19 @@
 #pragma once
 
-class SendBufferChunk;
-
-class SendBuffer
+class SendBuffer : enable_shared_from_this<SendBuffer>
 {
 public:
-	SendBuffer(shared_ptr<SendBufferChunk> owner, BYTE* buffer, uint32 allocSize);
+	SendBuffer(int32 bufferSize);
 	~SendBuffer();
 
-	BYTE* Buffer() { return _buffer; }
-	uint32 WriteSize() const { return _writeSize; }
-	void Close(uint32 writeSize);
+	BYTE* Buffer() { return _buffer.data(); }
+	int32 WriteSize() { return _writeSize; }
+	int32 Capacity() { return static_cast<int32>(_buffer.size()); }
+
+	void CopyData(void* data, int32 len);
 
 private:
-	BYTE* _buffer;
-	uint32 _allocSize;
-	uint32 _writeSize;
-
-	shared_ptr<SendBufferChunk> _owner;
+	vector<BYTE>	_buffer;
+	int32			_writeSize = 0;
 };
 

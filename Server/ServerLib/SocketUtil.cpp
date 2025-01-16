@@ -3,6 +3,7 @@
 #include "NetAddress.h"
 
 LPFN_DISCONNECTEX SocketUtil::DisconnectEx = nullptr;
+LPFN_CONNECTEX SocketUtil::ConnectEx = nullptr;
 
 SOCKET SocketUtil::CreateSocket() 
 {
@@ -17,6 +18,16 @@ bool SocketUtil::Bind(SOCKET socket, const NetAddress& address)
 
     // 소켓을 특정 IP와 포트에 바인딩
     return ::bind(socket, reinterpret_cast<const sockaddr*>(&sockAddr), sizeof(sockAddr)) != SOCKET_ERROR;
+}
+
+bool SocketUtil::BindAnyAddress(SOCKET socket, uint16 port)
+{
+    SOCKADDR_IN addr;
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = ::htonl(INADDR_ANY);
+    addr.sin_port = ::htons(port);
+
+    return SOCKET_ERROR != ::bind(socket, reinterpret_cast<const SOCKADDR*>(&addr), sizeof(addr));
 }
 
 bool SocketUtil::Listen(SOCKET socket, int backlog) 
@@ -80,6 +91,12 @@ LPFN_DISCONNECTEX SocketUtil::GetDisconnectEx()
     return DisconnectEx;
 }
 
+LPFN_CONNECTEX SocketUtil::GetConnectEx()
+{
+    if (ConnectEx == nullptr) LoadConnectEx();
+    return ConnectEx;
+}
+
 void SocketUtil::LoadDisconnectEx()
 {
     SOCKET socket = SocketUtil::CreateSocket();
@@ -88,6 +105,19 @@ void SocketUtil::LoadDisconnectEx()
     if (SOCKET_ERROR == ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guidDisconnectEx, sizeof(guidDisconnectEx), &DisconnectEx, sizeof(DisconnectEx), &bytesReturned, nullptr, nullptr))
     {
         cout << "LoadDisconnectEx Error" << WSAGetLastError() << endl;
+    }
+
+    SocketUtil::CloseSocket(socket);
+}
+
+void SocketUtil::LoadConnectEx()
+{
+    SOCKET socket = SocketUtil::CreateSocket();
+    DWORD bytesReturned = 0;
+    GUID guidConnectEx = WSAID_CONNECTEX;
+    if (SOCKET_ERROR == ::WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER, &guidConnectEx, sizeof(guidConnectEx), &ConnectEx, sizeof(ConnectEx), &bytesReturned, nullptr, nullptr))
+    {
+        cout << "LoadConnectEx Error" << WSAGetLastError() << endl;
     }
 
     SocketUtil::CloseSocket(socket);

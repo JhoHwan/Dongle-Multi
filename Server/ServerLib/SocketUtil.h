@@ -11,6 +11,8 @@ public:
     // 소켓 바인딩
     static bool Bind(SOCKET socket, const NetAddress& address);
 
+    static bool BindAnyAddress(SOCKET socket, uint16 port);
+
     // 소켓을 수신 대기 상태로 설정
     static bool Listen(SOCKET socket, int backlog = SOMAXCONN);
 
@@ -29,9 +31,13 @@ public:
     static void CloseSocket(SOCKET socket);
 
     static LPFN_DISCONNECTEX GetDisconnectEx();
+    static LPFN_CONNECTEX GetConnectEx();
 
 private:
     static void LoadDisconnectEx();
+    static void LoadConnectEx();
+
     static LPFN_DISCONNECTEX DisconnectEx;
+    static LPFN_CONNECTEX ConnectEx;
 
 };

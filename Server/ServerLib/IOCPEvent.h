@@ -3,10 +3,12 @@
 
 class Session;
 class SendBuffer;
+class IOCPObject;
 
 enum class EventType : uint8
 {
 	Accept,
+	Connect,
 	Send, 
 	Recv,
 	Disconnect,
@@ -25,14 +27,23 @@ private:
 	EventType _eventType;
 
 public:
-	shared_ptr<Session> session;
-
+	shared_ptr<IOCPObject> owner;
 };
 
 class AcceptEvent : public IOCPEvent
 {
 public:
 	AcceptEvent() : IOCPEvent(EventType::Accept) {}
+
+	shared_ptr<Session> session;
+};
+
+class ConnectEvent : public IOCPEvent
+{
+public:
+	ConnectEvent() : IOCPEvent(EventType::Connect) {}
+
+	shared_ptr<Session> session;
 };
 
 class SendEvent : public IOCPEvent

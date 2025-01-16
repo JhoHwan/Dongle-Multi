@@ -22,6 +22,13 @@ bool Listener::StartAccept(shared_ptr<IOCPServer> server)
 {
 	cout << "Start Listener" << endl;
 
+	WSADATA wsaData;
+	if (::WSAStartup(MAKEWORD(2, 2), OUT & wsaData))
+	{
+		cout << "WSAStartup Error" << endl;
+		return false;
+	}
+
 	_server = server;
 
 	_socket = SocketUtil::CreateSocket();
@@ -31,7 +38,10 @@ bool Listener::StartAccept(shared_ptr<IOCPServer> server)
 		return false;
 	}
 
-	server->RegisterSocket(_socket);
+	if (!server->GetIOCPCore().RegisterSocket(_socket))
+	{
+		return false;
+	}
 
 	// 소켓 옵션 SO_REUSEADDR 설정 (주소 재사용 허용)
 	if (SocketUtil::SetReuseAddr(_socket) == false)
@@ -49,8 +59,6 @@ bool Listener::StartAccept(shared_ptr<IOCPServer> server)
 		cout << "Bind Error : " << WSAGetLastError() << endl;
 		return false;
 	}
-
-
 
 	// 소켓을 클라이언트 요청 수신 대기 상태로 설정
 	if (SocketUtil::Listen(_socket) == false)
@@ -75,6 +83,7 @@ void Listener::RegisterAccept(AcceptEvent* acceptEvent)
 
 	// acceptEvent 초기화 및 Session 연결
 	acceptEvent->Init();
+	acceptEvent->owner = shared_from_this();
 	acceptEvent->session = session;
 	
 	DWORD bytesReceived = 0;
@@ -94,14 +103,6 @@ void Listener::RegisterAccept(AcceptEvent* acceptEvent)
 
 void Listener::ProcessAccept(AcceptEvent* acceptEvent)
 {
-	// 소캣을 IOCP 핸들에 연결
-	if (_server->RegisterSocket(acceptEvent->session->GetSocket()) == false)
-	{
-		cout << "RegisterSocket Error" << endl;
-		RegisterAccept(acceptEvent);
-		return;
-	}
-
 	// Accept된 소켓에 리스닝 소켓의 옵션을 적용
 	if (SocketUtil::SetAcceptSockOption(acceptEvent->session->GetSocket(), _socket) == false)
 	{
@@ -119,11 +120,21 @@ void Listener::ProcessAccept(AcceptEvent* acceptEvent)
 	}
 	acceptEvent->session->SetAddress(address);
 
-	// 서버에 세션 추가
 	_server->AddSession(acceptEvent->session);
 	acceptEvent->session->ProcessConnect();
 	acceptEvent->session = nullptr;
 
 	// 다음 연결 요청을 처리하도록 Accept 등록
 	RegisterAccept(acceptEvent);
+}
+
+void Listener::Dispatch(IOCPEvent* iocpEvent, int32 numOfBytes)
+{
+	if (iocpEvent->GetEventType() != EventType::Accept)
+	{
+		return;
+	}
+
+	AcceptEvent* acceptEvent = static_cast<AcceptEvent*>(iocpEvent);
+	ProcessAccept(acceptEvent);
 }

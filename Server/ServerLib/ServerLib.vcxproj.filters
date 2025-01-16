@@ -33,13 +33,6 @@
     <ClInclude Include="SendBuffer.h">
       <Filter>NetWork</Filter>
     </ClInclude>
-    <ClInclude Include="CoreTLS.h" />
-    <ClInclude Include="SendBufferChunk.h">
-      <Filter>NetWork</Filter>
-    </ClInclude>
-    <ClInclude Include="SendBufferManager.h">
-      <Filter>NetWork</Filter>
-    </ClInclude>
     <ClInclude Include="SocketUtil.h">
       <Filter>NetWork</Filter>
     </ClInclude>
@@ -53,6 +46,11 @@
       <Filter>Job</Filter>
     </ClInclude>
     <ClInclude Include="JobManager.h" />
+    <ClInclude Include="Connector.h" />
+    <ClInclude Include="IOCPCore.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="IOCPObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -78,13 +76,6 @@
     <ClCompile Include="SendBuffer.cpp">
       <Filter>NetWork</Filter>
     </ClCompile>
-    <ClCompile Include="CoreTLS.cpp" />
-    <ClCompile Include="SendBufferChunk.cpp">
-      <Filter>NetWork</Filter>
-    </ClCompile>
-    <ClCompile Include="SendBufferManager.cpp">
-      <Filter>NetWork</Filter>
-    </ClCompile>
     <ClCompile Include="SocketUtil.cpp">
       <Filter>NetWork</Filter>
     </ClCompile>
@@ -98,5 +89,10 @@
       <Filter>Job</Filter>
     </ClCompile>
     <ClCompile Include="JobManager.cpp" />
+    <ClCompile Include="Connector.cpp" />
+    <ClCompile Include="IOCPCore.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="IOCPObject.cpp" />
   </ItemGroup>
 </Project>

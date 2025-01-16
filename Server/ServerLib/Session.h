@@ -8,15 +8,15 @@ class IOCPServer;
 class SendBuffer;
 class PacketHandler;
 
-class Session : public std::enable_shared_from_this<Session>
+class Session : public IOCPObject
 {
     enum { MAX_SEND_SIZE = 512 };
 public:
     // 생성자 및 소멸자
     Session();
-    ~Session();
+    virtual ~Session();
 
-    void Dispatch(IOCPEvent* iocpEvent, uint32 numberOfBytesTransferred);
+    virtual void Dispatch(class IOCPEvent* iocpEvent, int32 numOfBytes = 0) override;
 
     // 연결 관리
     void Connect();
@@ -52,6 +52,7 @@ public:
     inline SOCKET GetSocket() const { return _socket; }
     inline RecvBuffer& GetRecvBuffer() { return _recvBuffer; }
     inline const NetAddress& GetAddress() const { return _address; }
+    inline shared_ptr<Session> GetSharedPtr() { return static_pointer_cast<Session>(shared_from_this()); }
 
 protected:
     atomic<bool> _isConnect;

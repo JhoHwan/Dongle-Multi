@@ -9,29 +9,34 @@ Session::Session()
 	: _recvEvent(), _disConnectEvent(), _recvBuffer(4096)
 { 
 	_socket = SocketUtil::CreateSocket();
+	if (_socket == INVALID_SOCKET)
+	{
+		auto errCode = WSAGetLastError();
+		cout << errCode;
+	}
 	_isConnect.store(false);
 	_sendRegistered.store(false);
 }
 
 Session::~Session()
 {
-	cout << "Release Session" << endl;
+	//cout << "Release Session" << endl;
 	SocketUtil::CloseSocket(_socket);
 }
 
-void Session::Dispatch(IOCPEvent* iocpEvent, uint32 numberOfBytesTransferred)
+void Session::Dispatch(class IOCPEvent* iocpEvent, int32 numOfBytes)
 {
 	EventType eventType = iocpEvent->GetEventType();
 	switch (eventType)
 	{
 	case EventType::Send:
-		iocpEvent->session->ProcessSend(numberOfBytesTransferred);
+		ProcessSend(numOfBytes);
 		break;
 	case EventType::Recv:
-		iocpEvent->session->ProcessRecv(numberOfBytesTransferred);
+		ProcessRecv(numOfBytes);
 		break;
 	case EventType::Disconnect:
-		iocpEvent->session->ProcessDisconnect();
+		ProcessDisconnect();
 		break;
 	default:
 		Disconnect();
@@ -56,7 +61,7 @@ void Session::RegisterSend()
 		return;
 
 	_sendEvent.Init();
-	_sendEvent.session = shared_from_this();
+	_sendEvent.owner = shared_from_this();
 
 	{
 		lock_guard<recursive_mutex> lock(_sendLock);
@@ -99,7 +104,7 @@ void Session::RegisterSend()
 			{
 				cout << "WSASend Error : " << errCode << endl;
 			}
-			_sendEvent.session.reset(); // Release-Ref
+			_sendEvent.owner.reset(); // Release-Ref
 			_sendEvent.sendBuffers.clear();
 			_sendRegistered.store(false);
 		}
@@ -108,7 +113,7 @@ void Session::RegisterSend()
 
 void Session::ProcessSend(uint32 sentBytes)
 {
-	_sendEvent.session.reset();
+	_sendEvent.owner.reset();
 	_sendEvent.sendBuffers.clear();
 
 
@@ -134,7 +139,7 @@ void Session::RegisterRecv()
 	if (_isConnect.load() == false)
 		return;
 
-	_recvEvent.session = shared_from_this();
+	_recvEvent.owner = shared_from_this();
 
 	WSABUF wsaBuf{};
 	wsaBuf.buf = reinterpret_cast<char*>(_recvBuffer.WritePos());
@@ -156,7 +161,7 @@ void Session::RegisterRecv()
 
 void Session::ProcessRecv(uint32 recvBytes)
 {
-	_recvEvent.session.reset(); // Release-Ref
+	_recvEvent.owner.reset(); // Release-Ref
 	if (_recvBuffer.OnWirte(recvBytes) == false)
 	{
 		cout << "RecvBuffer Overflow!" << endl;
@@ -213,14 +218,14 @@ void Session::RegisterDisconnect()
 {
 	auto DisconnectEx = SocketUtil::GetDisconnectEx();
 	_disConnectEvent.Init();
-	_disConnectEvent.session = shared_from_this();
+	_disConnectEvent.owner = shared_from_this();
 
 	if (SOCKET_ERROR == DisconnectEx(_socket, reinterpret_cast<LPOVERLAPPED>(&_disConnectEvent), TF_REUSE_SOCKET, 0))
 	{
 		auto errCode = WSAGetLastError();
 		if (errCode != WSA_IO_PENDING)
 		{
-			_disConnectEvent.session.reset();
+			_disConnectEvent.owner.reset();
 			cout << "DisconnectEx Error" << errCode << endl;
 			return;
 		}
@@ -229,9 +234,11 @@ void Session::RegisterDisconnect()
 
 void Session::ProcessDisconnect()
 {
-	_disConnectEvent.session.reset();
+	_disConnectEvent.owner.reset();
 	OnDisconnected();
-	_server->DeleteSession(shared_from_this());
+
+	if (_server == nullptr) return;
+	_server->DeleteSession(GetSharedPtr());
 }
 
 void Session::OnConnected()

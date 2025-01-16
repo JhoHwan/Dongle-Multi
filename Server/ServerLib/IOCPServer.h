@@ -4,29 +4,25 @@
 #include "Session.h"
 
 class PacketHandler;
+class IOCPCore;
 
 using SessionFactory = function<shared_ptr<Session>(void)>;
 
 class IOCPServer : public std::enable_shared_from_this<IOCPServer>
 {
 public:
-
     // 积己磊 棺 家戈磊
     IOCPServer() = delete;
     IOCPServer(NetAddress address, SessionFactory sessionFactory, shared_ptr<PacketHandler> packetHandler);
     ~IOCPServer();
 
-    shared_ptr<Session> CreateSession() const;
+    shared_ptr<Session> CreateSession();
 
     virtual void BroadCast(shared_ptr<SendBuffer> sendBuffer);
 
     // 辑滚 包府
     bool Start();
     bool Stop();
-
-    // IOCP 殿废
-    bool Register(HANDLE handle);
-    bool RegisterSocket(SOCKET socket);
 
     // 技记 包府
     void AddSession(std::shared_ptr<Session> session);
@@ -39,12 +35,14 @@ public:
 
     // Getter
     inline const NetAddress& GetAddress() const { return _address; }
+    inline IOCPCore& GetIOCPCore() { return _iocpCore; }
 
 protected:
-    HANDLE _iocpHandle;
+    IOCPCore _iocpCore;
+
     NetAddress _address;
 
-    unique_ptr<Listener> _listener;
+    shared_ptr<Listener> _listener;
     shared_ptr<PacketHandler> _packetHandler;
 
     set<std::shared_ptr<Session>> _sessions;

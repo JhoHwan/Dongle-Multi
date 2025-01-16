@@ -5,8 +5,7 @@
 #include "SendBuffer.h"
 
 IOCPServer::IOCPServer(NetAddress address, SessionFactory sessionFactory, shared_ptr<PacketHandler> packetHandler) 
-    : _address(address), _iocpHandle(INVALID_HANDLE_VALUE),
-      _sessionFactory(sessionFactory), _packetHandler(packetHandler)
+    : _address(address), _sessionFactory(sessionFactory), _packetHandler(packetHandler)
 {
 }
 
@@ -16,10 +15,17 @@ IOCPServer::~IOCPServer()
     _packetHandler.reset();
 }
 
-shared_ptr<Session> IOCPServer::CreateSession() const
+shared_ptr<Session> IOCPServer::CreateSession()
 {
     auto session = _sessionFactory();
     session->SetPacketHandler(_packetHandler);
+
+    // 소캣을 IOCP 핸들에 연결
+    if (_iocpCore.RegisterSocket(session->GetSocket()) == false)
+    {
+        cout << "RegisterSocket Error" << endl;
+        return nullptr;
+    }
     return session;
 }
 
@@ -37,21 +43,7 @@ bool IOCPServer::Start()
 {
     _packetHandler->SetOwner(shared_from_this());
 
-    _iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-    if (_iocpHandle == INVALID_HANDLE_VALUE)
-    {
-        cout << "CreateIoCompletionPort Error" << endl;
-        return false;
-    }
-
-    WSADATA wsaData;
-    if (::WSAStartup(MAKEWORD(2, 2), OUT & wsaData))
-    {
-        cout << "WSAStartup Error" << endl;
-        return false;
-    }
-
-    _listener = make_unique<Listener>(10);
+    _listener = make_shared<Listener>(10);
 
     _listener->StartAccept(shared_from_this());
     return true;
@@ -59,56 +51,14 @@ bool IOCPServer::Start()
 
 bool IOCPServer::Stop()
 {
-    if (_iocpHandle != INVALID_HANDLE_VALUE)
-    {
-        ::CloseHandle(_iocpHandle);
-        _iocpHandle = INVALID_HANDLE_VALUE;
-    }
-
     ::WSACleanup();
 
     return true;
 }
 
-bool IOCPServer::Register(HANDLE handle)
-{
-    // IOCP에 핸들 등록
-    const unsigned int threadNum = std::thread::hardware_concurrency() * 2; //스레드풀 크기 설정
-
-    if (::CreateIoCompletionPort(handle, _iocpHandle, 0, threadNum) == nullptr)
-    {
-        cout << "Register Error: " << GetLastError() << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool IOCPServer::RegisterSocket(SOCKET socket)
-{
-    // 소켓을 IOCP에 등록
-    return Register(reinterpret_cast<HANDLE>(socket));
-}
-
 void IOCPServer::DispatchIocpEvent(uint16 time)
 {
-    DWORD lpNumberOfBytes;
-    IOCPEvent* iocpEvent = nullptr;
-    ULONG_PTR key = 0;
-    if (::GetQueuedCompletionStatus(_iocpHandle, &lpNumberOfBytes, &key, reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), static_cast<DWORD>(time)))
-    {
-        EventType eventType = iocpEvent->GetEventType();
-        if (eventType == EventType::Accept)
-            _listener->ProcessAccept(static_cast<AcceptEvent*>(iocpEvent));
-        else
-            iocpEvent->session->Dispatch(iocpEvent, static_cast<uint32>(lpNumberOfBytes));
-    }
-    else
-    {
-        if (GetLastError() == WAIT_TIMEOUT) return;
-        EventType eventType = iocpEvent->GetEventType();
-        iocpEvent->session->Dispatch(iocpEvent, static_cast<uint32>(lpNumberOfBytes));
-    }
+    _iocpCore.Dispatch(time);
 }
 
 void IOCPServer::DispatchJob(uint16 time)
