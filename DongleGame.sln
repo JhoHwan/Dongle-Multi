@@ -27,6 +27,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DummyClient", "DummyClient", "{0569D9C1-8347-4946-98E8-83F21A7596C6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DummyClientWrapper", "DummyClient\DummyClientWrapper\DummyClientWrapper.vcxproj", "{FD77CAD5-9B62-446D-B6A3-A076A74A41DF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F00D22C-0AC2-4D7D-8F4F-6A56498B64DC} = {4F00D22C-0AC2-4D7D-8F4F-6A56498B64DC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyClientCore", "DummyClient\DummyClientCore\DummyClientCore.csproj", "{DCCC9A90-EDC6-4AB7-8071-DB2191C679D2}"
 EndProject

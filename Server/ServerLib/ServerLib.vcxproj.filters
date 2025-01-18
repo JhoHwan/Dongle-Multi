@@ -7,6 +7,9 @@
     <Filter Include="Job">
       <UniqueIdentifier>{1968b257-ce8c-4021-aca5-b6a898bd26e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{61a020c4-c486-4944-b772-9a44512fdd6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -37,8 +40,6 @@
       <Filter>NetWork</Filter>
     </ClInclude>
     <ClInclude Include="CoreGlobal.h" />
-    <ClInclude Include="PacketHandler.h" />
-    <ClInclude Include="IPacket.h" />
     <ClInclude Include="Job.h">
       <Filter>Job</Filter>
     </ClInclude>
@@ -51,6 +52,12 @@
       <Filter>NetWork</Filter>
     </ClInclude>
     <ClInclude Include="IOCPObject.h" />
+    <ClInclude Include="PacketHandler.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="IPacket.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -80,8 +87,6 @@
       <Filter>NetWork</Filter>
     </ClCompile>
     <ClCompile Include="CoreGlobal.cpp" />
-    <ClCompile Include="PacketHandler.cpp" />
-    <ClCompile Include="IPacket.cpp" />
     <ClCompile Include="Job.cpp">
       <Filter>Job</Filter>
     </ClCompile>
@@ -94,5 +99,11 @@
       <Filter>NetWork</Filter>
     </ClCompile>
     <ClCompile Include="IOCPObject.cpp" />
+    <ClCompile Include="PacketHandler.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="IPacket.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

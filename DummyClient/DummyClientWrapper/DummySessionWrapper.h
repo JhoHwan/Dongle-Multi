@@ -6,14 +6,17 @@ class DummySession;
 
 namespace DummyClientWrapper 
 {
-	public ref class ManagedDummySession
+	public ref class ManagedDummySession abstract
 	{
 	public:
 		ManagedDummySession();
 		~ManagedDummySession();
 		!ManagedDummySession();
 
-		void OnConnected();
+		virtual void OnConnected() abstract;
+		virtual void OnDisConnected() abstract;
+		virtual void OnRecv(uint32 sentBytes) abstract;
+		virtual void OnSend(uint32 sentBytes) abstract;
 
 		void Send(String^ message);
 		void Disconnect();
@@ -22,10 +25,8 @@ namespace DummyClientWrapper
 
 		shared_ptr<Session> GetNativeSession();
 
-	public:
-		Action^ ConnectedEvent;
-
 	private:
+
 		std::shared_ptr<DummySession>* _native;
 	};
 }

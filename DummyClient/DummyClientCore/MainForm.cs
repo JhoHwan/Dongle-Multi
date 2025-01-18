@@ -1,59 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using DummyClientWrapper;
 
 namespace DummyClientCore
 {
     public partial class MainForm : Form
     {
-        private DummyManager _manager = new DummyManager(4);
-        private bool _start;
+        public event EventHandler AddScenarioClicked;
+        public event EventHandler RemoveScenarioClicked;
+        public event EventHandler RunTestClicked;
+
+        // 이벤트 트리거 메서드
+        private void OnAddScenarioClicked() => AddScenarioClicked?.Invoke(this, EventArgs.Empty);
+        private void OnRemoveScenarioClicked() => RemoveScenarioClicked?.Invoke(this, EventArgs.Empty);
+        private void OnRunTestClicked() => RunTestClicked?.Invoke(this, EventArgs.Empty);
+
         public MainForm()
         {
             InitializeComponent();
 
-            _manager.Start();
+            // 버튼 클릭 이벤트에 트리거 연결
+            addScenarioButton.Click += (s, e) => OnAddScenarioClicked();
+            removeButton.Click += (s, e) => OnRemoveScenarioClicked();
+            runTestButton.Click += (s, e) => OnRunTestClicked();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        public void UpdateScenarioList(IEnumerable<string> scenarios)
         {
-            for (int i = 0; i < 50; i++)
+            scenarioListBox.Items.Clear();
+            foreach (var scenario in scenarios)
             {
-                _manager.Connect("127.0.0.1", 7777);
+                scenarioListBox.Items.Add(scenario);
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        public string GetSelectedScenarioName() => scenarioListBox.SelectedItem?.ToString();
+        public int GetSessionCount() => (int)sessionCountInput.Value;
+        public string GetSelectedScenarioFromListView()
         {
-            _manager.DisconnectAll();
-
+            return scenarioSessionListView.SelectedItems.Count > 0
+                ? scenarioSessionListView.SelectedItems[0].Text
+                : null;
         }
 
-        private void TestProtocol()
+        public void AddScenarioToListView(string scenarioName, int sessionCount)
         {
-            _start = true;
-            while (_start)
+            foreach (ListViewItem item in scenarioSessionListView.Items)
             {
-                for (int i = 0; i < 100; i++)
+                if (item.Text == scenarioName)
                 {
-                    _manager.Connect("127.0.0.1", 7777);
+                    // 동일한 이름의 시나리오가 이미 존재하면 카운트 증가
+                    int currentCount = int.Parse(item.SubItems[1].Text);
+                    item.SubItems[1].Text = (currentCount + sessionCount).ToString();
+                    return;
                 }
-
-                Thread.Sleep(2000);
-
-                _manager.DisconnectAll();
-
-                Thread.Sleep(2000);
-
             }
+
+            // 동일한 이름이 없으면 새 항목 추가
+            var newItem = new ListViewItem(new[] { scenarioName, sessionCount.ToString() });
+            scenarioSessionListView.Items.Add(newItem);
+        }
+
+        public void RemoveScenarioFromListView(string scenarioName)
+        {
+            foreach (ListViewItem item in scenarioSessionListView.Items)
+            {
+                if (item.Text == scenarioName)
+                {
+                    scenarioSessionListView.Items.Remove(item);
+                    break;
+                }
+            }
+        }
+        public void ShowMessage(string message)
+        {
+            MessageBox.Show(message, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

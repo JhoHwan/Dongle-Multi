@@ -16,13 +16,14 @@ DummyClientWrapper::ManagedDummySession::~ManagedDummySession()
 
 DummyClientWrapper::ManagedDummySession::!ManagedDummySession()
 {
+    if (_native != nullptr)
+    {
+        (*_native).reset();
+        delete _native;
+        _native = nullptr;
+    }
 }
 
-void DummyClientWrapper::ManagedDummySession::OnConnected()
-{
-    if (ConnectedEvent == nullptr) return;
-    ConnectedEvent();
-}
 
 void DummyClientWrapper::ManagedDummySession::Send(String^ message)
 {
@@ -37,8 +38,10 @@ void DummyClientWrapper::ManagedDummySession::Send(String^ message)
 void DummyClientWrapper::ManagedDummySession::Disconnect()
 {
     (*_native)->Disconnect();
+
     (*_native).reset();
     delete _native;
+    _native = nullptr;
 }
 
 SOCKET DummyClientWrapper::ManagedDummySession::GetSocket()

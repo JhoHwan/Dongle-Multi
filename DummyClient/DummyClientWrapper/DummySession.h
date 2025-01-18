@@ -12,7 +12,7 @@ public:
 
 	virtual ~DummySession() override
 	{
-
+		
 	}
 
 	virtual void OnConnected() override
@@ -22,18 +22,19 @@ public:
 
 	virtual void OnDisconnected() override
 	{
-
+		_managedObject->OnDisConnected();
 	}
 
 	virtual void OnSend(uint32 sentBytes) override
 	{
-
+		_managedObject->OnSend(sentBytes);
 	}
 
 	virtual void OnRecv(uint32 recvBytes) override
 	{
-
+		_managedObject->OnRecv(recvBytes);
 	}
+
 private:
 	gcroot<ManagedDummySession^> _managedObject;
 };

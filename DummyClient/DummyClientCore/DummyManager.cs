@@ -40,13 +40,7 @@ namespace DummyClientCore
 
         public void Connect(string ip, ushort port)
         {
-            ManagedDummySession session = new ManagedDummySession();
-
-            session.ConnectedEvent += () =>
-            {
-                Console.WriteLine("Connect Sucess");
-                _sessionList.Add(session);
-            };
+            Session session = new Session();
 
             _iocpCore.RegisterSocket(session.GetSocket());
 
@@ -58,7 +52,6 @@ namespace DummyClientCore
             foreach(ManagedDummySession session in _sessionList)
             {
                 session.Disconnect();
-                session.ConnectedEvent = null;
             }
 
             _sessionList.Clear();
