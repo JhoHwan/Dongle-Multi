@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DummyClientCore
 {
-    public class DummyClientManager
+    public class DummyManager
     {
         private readonly int _threadCount;
         private List<Thread> _threads;
@@ -17,7 +17,7 @@ namespace DummyClientCore
 
         private List<ManagedDummySession> _sessionList; 
 
-        public DummyClientManager(int threadCount)
+        public DummyManager(int threadCount)
         {
             _threadCount = threadCount;
             _threads = new List<Thread>();

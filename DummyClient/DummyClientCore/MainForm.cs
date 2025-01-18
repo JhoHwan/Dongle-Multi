@@ -12,11 +12,11 @@ using DummyClientWrapper;
 
 namespace DummyClientCore
 {
-    public partial class UI : Form
+    public partial class MainForm : Form
     {
-        private DummyClientManager _manager = new DummyClientManager(4);
+        private DummyManager _manager = new DummyManager(4);
         private bool _start;
-        public UI()
+        public MainForm()
         {
             InitializeComponent();
 
