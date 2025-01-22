@@ -11,19 +11,17 @@ namespace DummyClientCore
     public class MainController
     {
         private readonly MainForm _form;
-        private readonly DummyManager _manager;
+        private readonly ServerService _service;
 
-        public MainController(MainForm form, DummyManager manager) 
+        public MainController(MainForm form, ServerService service) 
         { 
             _form = form;
-            _manager = manager;
+            _service = service;
 
             // 이벤트 핸들러 등록
             _form.AddScenarioClicked += OnAddScenarioClicked;
             _form.RemoveScenarioClicked += OnRemoveScenarioClicked;
-            _form.RunTestClicked += OnRunTestClicked;
-
-            _manager.Start();
+            _form.RunTestClicked += OnRunTestClicked;;
 
             LoadScenarios();
         }
@@ -52,18 +50,39 @@ namespace DummyClientCore
                 return;
             }
 
-            //_model.AddScenario(scenarioName, sessionCount);
+            _service.AddScenario(scenarioName, sessionCount);
             _form.AddScenarioToListView(scenarioName, sessionCount);
         }
 
-        private void OnRunTestClicked(object sender, EventArgs e)
+        private async void OnRunTestClicked(object sender, EventArgs e)
         {
-            _form.GetSelectedScenarioFromListView();
+            if(_service.ScenariosCount == 0)
+            {
+                _form.ShowMessage("No registered scenarios.");
+                return;
+            }
+
+            var tasks = _service.StartTest();
+
+            await Task.WhenAll(tasks);
+
+            _form.ShowMessage("Finish All Tasks");
+
+            _service.DisconnectAll();
         }
 
         private void OnRemoveScenarioClicked(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            var scenarioName = _form.GetSelectedScenarioFromListView();
+
+            if (string.IsNullOrEmpty(scenarioName))
+            {
+                _form.ShowMessage("Please select a scenario.");
+                return;
+            }
+
+            _service.RemoveScenario(scenarioName);
+            _form.RemoveScenarioFromListView(scenarioName);
         }
     }
 }

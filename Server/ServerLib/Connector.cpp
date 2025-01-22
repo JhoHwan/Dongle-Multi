@@ -44,15 +44,18 @@ bool Connector::RegisterConnect(wstring ip, uint16 port, ConnectEvent* connectEv
 {
 	const SOCKET& socket = connectEvent->session->GetSocket();
 
-	if (SocketUtil::SetReuseAddr(socket) == false)
-	{
-		delete connectEvent;
-		return false;
-	}
-
 	if (SocketUtil::BindAnyAddress(socket, 0) == false)
 	{
-		delete connectEvent;
+		auto errCode = WSAGetLastError();
+
+		if (errCode != WSAEINVAL)
+		{
+			return false;
+		}
+	}
+
+	if (SocketUtil::SetReuseAddr(socket) == false)
+	{
 		return false;
 	}
 

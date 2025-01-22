@@ -8,20 +8,24 @@
 Session::Session() 
 	: _recvEvent(), _disConnectEvent(), _recvBuffer(4096)
 { 
-	_socket = SocketUtil::CreateSocket();
-	if (_socket == INVALID_SOCKET)
-	{
-		auto errCode = WSAGetLastError();
-		cout << errCode;
-	}
 	_isConnect.store(false);
 	_sendRegistered.store(false);
 }
 
 Session::~Session()
 {
-	//cout << "Release Session" << endl;
+	cout << "Release Session" << endl;
 	SocketUtil::CloseSocket(_socket);
+}
+
+void Session::CreateSocket()
+{
+	_socket = SocketUtil::CreateSocket();
+	if (_socket == INVALID_SOCKET)
+	{
+		auto errCode = WSAGetLastError();
+		cout << errCode;
+	}
 }
 
 void Session::Dispatch(class IOCPEvent* iocpEvent, int32 numOfBytes)
@@ -234,6 +238,9 @@ void Session::RegisterDisconnect()
 
 void Session::ProcessDisconnect()
 {
+	::shutdown(_socket, SD_BOTH);
+	::closesocket(_socket);
+
 	_disConnectEvent.owner.reset();
 	OnDisconnected();
 

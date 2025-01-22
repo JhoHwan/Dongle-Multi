@@ -9,12 +9,6 @@
     <ClCompile Include="PlayerSession.cpp">
       <Filter>Server</Filter>
     </ClCompile>
-    <ClCompile Include="Packet.cpp">
-      <Filter>Server\Packet</Filter>
-    </ClCompile>
-    <ClCompile Include="ServerPacketHandler.cpp">
-      <Filter>Server\Packet</Filter>
-    </ClCompile>
     <ClCompile Include="Room.cpp">
       <Filter>Server\Contents</Filter>
     </ClCompile>
@@ -24,20 +18,23 @@
     <ClCompile Include="IDGenerator.cpp">
       <Filter>Server\Contents</Filter>
     </ClCompile>
+    <ClCompile Include="Protobuf\Protocol.pb.cc">
+      <Filter>Packet\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp">
+      <Filter>Packet\MyPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerPacketHandler.cpp">
+      <Filter>Packet\MyPacket</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="GameServer.h">
       <Filter>Server</Filter>
     </ClInclude>
-    <ClInclude Include="Packet.h">
-      <Filter>Server\Packet</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerSession.h">
       <Filter>Server</Filter>
-    </ClInclude>
-    <ClInclude Include="ServerPacketHandler.h">
-      <Filter>Server\Packet</Filter>
     </ClInclude>
     <ClInclude Include="Room.h">
       <Filter>Server\Contents</Filter>
@@ -48,8 +45,20 @@
     <ClInclude Include="IDGenerator.h">
       <Filter>Server\Contents</Filter>
     </ClInclude>
+    <ClInclude Include="Protobuf\Protocol.pb.h">
+      <Filter>Packet\Protobuf</Filter>
+    </ClInclude>
     <ClInclude Include="Structs.h">
-      <Filter>Server\Packet</Filter>
+      <Filter>Packet\MyPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h">
+      <Filter>Packet\MyPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPacketHandler.h">
+      <Filter>Packet\MyPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatBuffer\Protocol_generated.h">
+      <Filter>Packet\FlatBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -59,8 +68,17 @@
     <Filter Include="Server\Contents">
       <UniqueIdentifier>{40943192-3bd7-47eb-a7ac-1034a9877690}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Server\Packet">
+    <Filter Include="Packet">
       <UniqueIdentifier>{97fbb1cf-f1f5-4003-8600-501ae30cccf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet\Protobuf">
+      <UniqueIdentifier>{aff50a79-f25d-4a26-a331-59e1f30be704}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet\MyPacket">
+      <UniqueIdentifier>{81daee20-2f06-49b5-987a-5c5b21317d77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet\FlatBuffer">
+      <UniqueIdentifier>{ee747398-bc63-4a54-a564-270ee4aed688}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

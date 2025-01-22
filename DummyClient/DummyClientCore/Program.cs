@@ -15,7 +15,7 @@ namespace DummyClientCore
             Application.SetCompatibleTextRenderingDefault(false);
 
             MainForm form = new MainForm();
-            DummyManager manager = new DummyManager(8);
+            ServerService manager = new ServerService(8);
             MainController controller = new MainController(form, manager);
 
             Application.Run(form);

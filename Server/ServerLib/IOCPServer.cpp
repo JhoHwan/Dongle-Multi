@@ -20,6 +20,14 @@ shared_ptr<Session> IOCPServer::CreateSession()
     auto session = _sessionFactory();
     session->SetPacketHandler(_packetHandler);
 
+    session->CreateSocket();
+
+    if (session->GetSocket() == INVALID_SOCKET)
+    {
+        auto errCode = WSAGetLastError();
+        cout << errCode;
+    }
+
     // 소캣을 IOCP 핸들에 연결
     if (_iocpCore.RegisterSocket(session->GetSocket()) == false)
     {

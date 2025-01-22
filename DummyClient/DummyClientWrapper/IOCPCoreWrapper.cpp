@@ -18,5 +18,5 @@ void DummyClientWrapper::ManagedIOCPCore::RegisterSocket(SOCKET socket)
 
 bool DummyClientWrapper::ManagedIOCPCore::Dispatch(unsigned int time)
 {
-    return _native->Dispatch();
+    return _native->Dispatch(time);
 }

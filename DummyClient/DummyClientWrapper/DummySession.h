@@ -8,11 +8,11 @@ public class DummySession : public Session
 public:
 	DummySession(gcroot<ManagedDummySession^> obj) : _managedObject(obj)
 	{
+
 	}
 
 	virtual ~DummySession() override
 	{
-		
 	}
 
 	virtual void OnConnected() override

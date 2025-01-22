@@ -118,6 +118,7 @@ void Listener::ProcessAccept(AcceptEvent* acceptEvent)
 		RegisterAccept(acceptEvent);
 		return;
 	}
+
 	acceptEvent->session->SetAddress(address);
 
 	_server->AddSession(acceptEvent->session);

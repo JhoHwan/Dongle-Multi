@@ -18,6 +18,8 @@ namespace DummyClientWrapper
 		virtual void OnRecv(uint32 sentBytes) abstract;
 		virtual void OnSend(uint32 sentBytes) abstract;
 
+		void CreateSocket();
+
 		void Send(String^ message);
 		void Disconnect();
 

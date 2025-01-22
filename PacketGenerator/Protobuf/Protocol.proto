@@ -1,0 +1,12 @@
+syntax = "proto3";
+package Protocol;
+
+message C_TEST
+{
+	uint64 id = 1;
+}
+
+message S_TEST
+{
+	uint64 id = 1;
+}

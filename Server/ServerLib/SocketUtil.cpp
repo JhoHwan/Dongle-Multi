@@ -22,6 +22,11 @@ bool SocketUtil::Bind(SOCKET socket, const NetAddress& address)
 
 bool SocketUtil::BindAnyAddress(SOCKET socket, uint16 port)
 {
+    if (socket == INVALID_SOCKET)
+    {
+        return false;
+    }
+
     SOCKADDR_IN addr;
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = ::htonl(INADDR_ANY);
@@ -38,7 +43,7 @@ bool SocketUtil::Listen(SOCKET socket, int backlog)
 
 bool SocketUtil::SetReuseAddr(SOCKET socket) 
 {
-    int optval = 0; // 옵션 활성화 값
+    int optval = 1; // 옵션 활성화 값
 
     // setsockopt을 사용하여 SO_REUSEADDR 옵션 설정 (주소 재사용 허용)
     return ::setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&optval), sizeof(optval)) == 0;

@@ -16,6 +16,8 @@ public:
     Session();
     virtual ~Session();
 
+    void CreateSocket();
+
     virtual void Dispatch(class IOCPEvent* iocpEvent, int32 numOfBytes = 0) override;
 
     // 연결 관리
@@ -49,7 +51,7 @@ public:
     { _packetHandler = packetHandler; }
 
     // Getteter 
-    inline SOCKET GetSocket() const { return _socket; }
+    inline SOCKET GetSocket() { return _socket; }
     inline RecvBuffer& GetRecvBuffer() { return _recvBuffer; }
     inline const NetAddress& GetAddress() const { return _address; }
     inline shared_ptr<Session> GetSharedPtr() { return static_pointer_cast<Session>(shared_from_this()); }
