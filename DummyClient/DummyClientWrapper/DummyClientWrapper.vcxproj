@@ -75,12 +75,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)Server\ServerLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Server\Libs\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Server\Libraries\ServerCore\$(Configuration);$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)DummyClient\Build\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)Server\ServerLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Server\Libs\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Server\Libraries\ServerCore\$(Configuration);$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)DummyClient\Build\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

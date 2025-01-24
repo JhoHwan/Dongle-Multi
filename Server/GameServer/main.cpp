@@ -45,8 +45,8 @@ struct is_std_vector : std::false_type {};
 template<typename T, typename Alloc>
 struct is_std_vector<std::vector<T, Alloc>> : std::true_type {};
 
-template<typename Builder, typename... Args>
-auto transformArgs(Builder& builder, Args&&... args) {
+template<typename... Args>
+auto transformArgs(flatbuffers::FlatBufferBuilder& builder, Args&&... args) {
 	return std::make_tuple(
 		[&]() -> decltype(auto) {
 			if constexpr (std::is_same_v<std::decay_t<Args>, std::string> || std::is_same_v<std::decay_t<Args>, const char*>) {
@@ -67,7 +67,7 @@ auto transformArgs(Builder& builder, Args&&... args) {
 }
 
 template<typename Ret, typename... FuncArgs ,typename... Args>
-shared_ptr<SendBuffer> SerializeFlatBuffer(Flatbuffer::PacketContent type, flatbuffers::Offset<Ret>(*func)(flatbuffers::FlatBufferBuilder&, FuncArgs...) , Args&&... args)
+shared_ptr<SendBuffer> SerializeFlatBuffer(Flatbuffer::PacketContent type, flatbuffers::Offset<Ret>(*func)(flatbuffers::FlatBufferBuilder&, FuncArgs...), Args&&... args)
 {
 	std::vector<BYTE> vec(128);
 
