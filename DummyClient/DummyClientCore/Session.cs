@@ -7,38 +7,29 @@ namespace DummyClientCore
 {
     public class Session : ManagedDummySession
     {
-        private readonly ServerService _service;
+        private readonly CleintService _service;
 
         private bool _isExecute = false;
 
-        public Session(ServerService service) : base() 
+        public Session(CleintService service) : base() 
         {
             _service = service;
         }
 
-        public void Connect()
+        public void Connect(string ip, string port)
         {
             CreateSocket();
 
             _service.RegisterIOCP(this);
 
-            _service.Connector.Connect("127.0.0.1", 7777, this);
+            _service.Connector.Connect(ip, ushort.Parse(port), this);
         }
 
-        public async Task Execute()
+        public void Execute(Scenario scenario)
         {
             _isExecute = true;
 
-            for(int i = 0; i < 10; i++) 
-            {
-                Connect();
-
-                await Task.Delay(500);
-
-                Disconnect();
-
-                await Task.Delay(500);
-            }
+            scenario.Execute(this);
         }
 
         public void Stop()
@@ -65,7 +56,7 @@ namespace DummyClientCore
         }
         public override void OnSend(uint sentBytes)
         {
-
+            Console.WriteLine($"Send {sentBytes}");
         }
     }
 }

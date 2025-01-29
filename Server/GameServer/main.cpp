@@ -134,8 +134,10 @@ int main()
 
 	GRoomManager.CreateRoom();
 
+	const int THREAD_COUNT = /*thread::hardware_concurrency() * 2*/4;
+
 	vector<thread> threads;
-	for (int i = 0; i < thread::hardware_concurrency() * 2; i++)
+	for (int i = 0; i < THREAD_COUNT; i++)
 	{
 		threads.emplace_back(Work, server);
 	}
@@ -143,7 +145,7 @@ int main()
 	while (true) {}
 
 	server->Stop();
-	for (int i = 0; i < thread::hardware_concurrency() * 2; i++)
+	for (int i = 0; i < THREAD_COUNT; i++)
 	{
 		threads[i].join();
 	}

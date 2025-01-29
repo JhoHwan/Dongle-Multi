@@ -11,9 +11,9 @@ namespace DummyClientCore
     public class MainController
     {
         private readonly MainForm _form;
-        private readonly ServerService _service;
+        private readonly CleintService _service;
 
-        public MainController(MainForm form, ServerService service) 
+        public MainController(MainForm form, CleintService service) 
         { 
             _form = form;
             _service = service;

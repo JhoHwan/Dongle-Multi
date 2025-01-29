@@ -20,7 +20,7 @@ namespace DummyClientWrapper
 
 		void CreateSocket();
 
-		void Send(String^ message);
+        void Send(cli::array<Byte>^ buffer);
 		void Disconnect();
 
 		SOCKET GetSocket();

@@ -29,12 +29,13 @@ void DummyClientWrapper::ManagedDummySession::CreateSocket()
     (*_native)->CreateSocket();
 }
 
-void DummyClientWrapper::ManagedDummySession::Send(String^ message)
+void DummyClientWrapper::ManagedDummySession::Send(cli::array<Byte>^ buffer)
 {
-    IntPtr ptr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(message);
-    void* messagePtr = static_cast<void*>(ptr.ToPointer());
-    auto sendBuffer = make_shared<SendBuffer>(message->Length);
-    sendBuffer->CopyData(messagePtr, message->Length);
+    pin_ptr<Byte> pByteArray = &buffer[0];
+    char* nativeCharArray = reinterpret_cast<char*>(pByteArray);
+
+    auto sendBuffer = make_shared<SendBuffer>(buffer->Length);
+    sendBuffer->CopyData(nativeCharArray, buffer->Length);
 
     (*_native)->Send(sendBuffer);
 }

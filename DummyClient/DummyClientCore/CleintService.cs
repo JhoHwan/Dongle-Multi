@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DummyClientCore
 {
-    public class ServerService
+    public class CleintService
     {
         // Thread
         private readonly int _threadCount;
@@ -29,7 +29,7 @@ namespace DummyClientCore
         // Session
         private readonly List<Session> _sessions; 
 
-        public ServerService(int threadCount)
+        public CleintService(int threadCount)
         {
             _threadCount = threadCount;
             _threadPool = new List<Thread>();
@@ -103,9 +103,14 @@ namespace DummyClientCore
 
             foreach (var session in _sessions)
             {
-                Task task = session.Execute();
+                Task task = new Task(() =>
+                {
+                    session.Execute(scenario: new TestScenario());
+                });
                 tasks.Add(task);
             }
+
+            tasks.ForEach(task => task.Start());
 
             return tasks;
         }
@@ -119,7 +124,11 @@ namespace DummyClientCore
 
         public void DisconnectAll()
         {
-            foreach(ManagedDummySession session in _sessions)
+            _isRun = false;
+            _threadPool.ForEach(thread => thread.Join());
+            _threadPool.Clear();
+
+            foreach (ManagedDummySession session in _sessions)
             {
                 session.Disconnect();
                 session.Dispose();
@@ -132,8 +141,10 @@ namespace DummyClientCore
         {
             while (_isRun)
             {
-                _iocpCore.Dispatch(1000);
+                _iocpCore.Dispatch(100);
             }
+
+            Console.WriteLine("Thread End!");
         }
 
         public void RegisterIOCP(ManagedDummySession session)
