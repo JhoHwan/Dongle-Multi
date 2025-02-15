@@ -12,7 +12,10 @@ public:
 	virtual void OnConnected() override;
 	virtual void OnDisconnected() override;
 	virtual void OnSend(uint32 sentBytes) override;
-	virtual void OnRecv(uint32 recvBytes) override;
+	virtual void OnRecv(BYTE* buffer, int32 len) override;
+
+	shared_ptr<PlayerSession> GetPlayerSessionRef() 
+	{ return static_pointer_cast<PlayerSession>(shared_from_this()); }
 
 	uint16 GetID() const { return _id; }
 	void SetRoom(shared_ptr<Room> room) { _room = room; }

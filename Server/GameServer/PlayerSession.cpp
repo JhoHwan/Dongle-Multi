@@ -1,4 +1,5 @@
 #include "pch.h"
+
 #include "PlayerSession.h"
 #include "GameServer.h"
 
@@ -29,7 +30,10 @@ void PlayerSession::OnSend(uint32 sentBytes)
 	
 }
 
-void PlayerSession::OnRecv(uint32 recvBytes)
+void PlayerSession::OnRecv(BYTE* buffer, int32 len)
 {
-}
+	auto session = GetSharedPtr();
+	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
+	ServerPacketHandler::HandlePacket(session, buffer, len);
+}

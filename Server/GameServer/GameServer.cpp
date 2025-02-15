@@ -2,8 +2,8 @@
 
 #include "GameServer.h"
 
-GameServer::GameServer(NetAddress address, SessionFactory sessionFactory, shared_ptr<PacketHandler> packetHandler)
-	: IOCPServer(address, sessionFactory, packetHandler)
+GameServer::GameServer(NetAddress address, SessionFactory sessionFactory)
+	: IOCPServer(address, sessionFactory)
 {
 
 }

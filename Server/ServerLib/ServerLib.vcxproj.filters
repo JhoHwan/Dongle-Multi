@@ -10,6 +10,9 @@
     <Filter Include="Packet">
       <UniqueIdentifier>{61a020c4-c486-4944-b772-9a44512fdd6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DataStruct">
+      <UniqueIdentifier>{b8b2be7b-c756-4823-ad16-bf29dd4baa9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -47,16 +50,20 @@
       <Filter>Job</Filter>
     </ClInclude>
     <ClInclude Include="JobManager.h" />
-    <ClInclude Include="Connector.h" />
     <ClInclude Include="IOCPCore.h">
       <Filter>NetWork</Filter>
     </ClInclude>
-    <ClInclude Include="IOCPObject.h" />
-    <ClInclude Include="PacketHandler.h">
-      <Filter>Packet</Filter>
-    </ClInclude>
     <ClInclude Include="IPacket.h">
       <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="IOCPObject.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="Connector.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="DoubleJobQueue.h">
+      <Filter>Job</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -94,16 +101,20 @@
       <Filter>Job</Filter>
     </ClCompile>
     <ClCompile Include="JobManager.cpp" />
-    <ClCompile Include="Connector.cpp" />
     <ClCompile Include="IOCPCore.cpp">
       <Filter>NetWork</Filter>
     </ClCompile>
-    <ClCompile Include="IOCPObject.cpp" />
-    <ClCompile Include="PacketHandler.cpp">
-      <Filter>Packet</Filter>
-    </ClCompile>
     <ClCompile Include="IPacket.cpp">
       <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="IOCPObject.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="Connector.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="DoubleJobQueue.cpp">
+      <Filter>Job</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

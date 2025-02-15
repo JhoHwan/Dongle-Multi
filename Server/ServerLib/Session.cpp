@@ -3,7 +3,7 @@
 #include "SocketUtil.h"
 #include "IOCPServer.h"
 #include "SendBuffer.h"
-#include "PacketHandler.h"
+
 
 Session::Session() 
 	: _recvEvent(), _disConnectEvent(), _recvBuffer(4096)
@@ -50,8 +50,13 @@ void Session::Dispatch(class IOCPEvent* iocpEvent, int32 numOfBytes)
 
 void Session::Send(shared_ptr<SendBuffer> sendBuffer)
 {
-	lock_guard<recursive_mutex> lock(_sendLock);
-	_sendQueue.push(sendBuffer);
+	if (_isConnect.load() == false)
+		return;
+
+	{
+		lock_guard<mutex> lock(_sendLock);
+		_sendQueue.push(sendBuffer);
+	}
 
 	if (_sendRegistered.exchange(true) == false)
 	{
@@ -68,7 +73,7 @@ void Session::RegisterSend()
 	_sendEvent.owner = shared_from_this();
 
 	{
-		lock_guard<recursive_mutex> lock(_sendLock);
+		lock_guard<mutex> lock(_sendLock);
 
 		uint32 writeSize = 0;
 		while (_sendQueue.empty() == false)
@@ -85,7 +90,6 @@ void Session::RegisterSend()
 			_sendQueue.pop();
 			_sendEvent.sendBuffers.push_back(sendBuffer);
 		}
-
 	}
 
 	vector<WSABUF> wsaBufs;
@@ -129,13 +133,17 @@ void Session::ProcessSend(uint32 sentBytes)
 
 	OnSend(sentBytes);
 
-	lock_guard<recursive_mutex> lock(_sendLock);
-	if (_sendQueue.empty() == true)
 	{
-		_sendRegistered.store(false);
+		lock_guard<mutex> lock(_sendLock);
+
+		if (_sendQueue.empty() == true)
+		{
+			_sendRegistered.store(false);
+			return;
+		}
 	}
-	else
-		RegisterSend();
+	
+	RegisterSend();
 }
 
 void Session::RegisterRecv()
@@ -179,19 +187,24 @@ void Session::ProcessRecv(uint32 recvBytes)
 		return;
 	}
 
-	uint32 packetSize = 0;
-	while (_packetHandler->ReadPacket(_recvBuffer, OUT packetSize))
+	int32 processLen = 0;
+	BYTE* buffer = _recvBuffer.ReadPos();
+	while (true)
 	{
-		BYTE* packet = _recvBuffer.ReadPos();
-		_recvBuffer.OnRead(packetSize);
+		int32 dataSize = _recvBuffer.DataSize() - processLen;
 
-		if (_packetHandler->ProcessPacket(packet))
-		{
-			//TODO : Error Log
-		}
+		if (dataSize < sizeof(PacketHeader))
+			break;
+
+		PacketHeader header = *(reinterpret_cast<PacketHeader*>(&buffer[processLen]));
+		if (dataSize < header.size)
+			break;
+
+		// 패킷 조립 성공
+		OnRecv(&buffer[processLen], header.size);
+
+		processLen += header.size;
 	}
-
-	OnRecv(recvBytes);
 
 	_recvBuffer.Clean();
 
@@ -265,10 +278,6 @@ void Session::OnSend(uint32 sentBytes)
 	//wprintf(L"Send : %d\n", sentBytes);
 }
 
-void Session::OnRecv(uint32 recvBytes)
+void Session::OnRecv(BYTE* buffer, int32 len)
 {
-	//wprintf(L"Recv : %d\n", recvBytes);
-
-
 }
-

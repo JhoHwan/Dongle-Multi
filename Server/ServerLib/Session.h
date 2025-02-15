@@ -42,13 +42,11 @@ public:
     virtual void OnConnected();
     virtual void OnDisconnected();
     virtual void OnSend(uint32 sentBytes);
-    virtual void OnRecv(uint32 recvBytes);
+    virtual void OnRecv(BYTE* buffer, int32 len);
 
     // Setter
     inline void SetServer(std::shared_ptr<IOCPServer> server) { _server = server; }
     inline void SetAddress(const NetAddress& address) { _address = address; }
-    inline void SetPacketHandler(shared_ptr<PacketHandler> packetHandler) 
-    { _packetHandler = packetHandler; }
 
     // Getteter 
     inline SOCKET GetSocket() { return _socket; }
@@ -60,13 +58,13 @@ protected:
     atomic<bool> _isConnect;
     SOCKET _socket;
     std::shared_ptr<IOCPServer> _server;
-    std::shared_ptr<PacketHandler> _packetHandler;
+
     NetAddress _address;
 
     RecvBuffer _recvBuffer;
     queue<shared_ptr<SendBuffer>> _sendQueue;
 
-    recursive_mutex _sendLock;
+    mutex _sendLock;
     atomic<bool> _sendRegistered;
     //TODO : Lock-Free Queue 적용해보기
 //IOCP Event

@@ -13,7 +13,7 @@ class IOCPServer : public std::enable_shared_from_this<IOCPServer>
 public:
     // 생성자 및 소멸자
     IOCPServer() = delete;
-    IOCPServer(NetAddress address, SessionFactory sessionFactory, shared_ptr<PacketHandler> packetHandler);
+    IOCPServer(NetAddress address, SessionFactory sessionFactory);
     ~IOCPServer();
 
     shared_ptr<Session> CreateSession();
@@ -43,7 +43,6 @@ protected:
     NetAddress _address;
 
     shared_ptr<Listener> _listener;
-    shared_ptr<PacketHandler> _packetHandler;
 
     set<std::shared_ptr<Session>> _sessions;
     SessionFactory _sessionFactory;

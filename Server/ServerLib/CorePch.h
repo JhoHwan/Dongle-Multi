@@ -34,10 +34,11 @@ using namespace std;
 
 #include "SendBuffer.h"
 #include "IPacket.h"
-#include "PacketHandler.h"
+//#include "PacketHandler.h"
 #include "IOCPServer.h"
 #include "Job.h"
 #include "JobQueue.h"
+#include "DoubleJobQueue.h"
 #include "JobManager.h"
 #include "Connector.h"
 

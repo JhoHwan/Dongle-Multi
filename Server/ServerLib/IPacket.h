@@ -1,19 +1,17 @@
 #pragma once
 
-enum class PacketType : uint16;
-
 #pragma pack(1)
 struct PacketHeader
 {
-	PacketType packetType;
-	uint16 packetSize = 0;
+	uint16 size;
+	uint16 id;
 
-	PacketHeader() {}
-	PacketHeader(PacketType packetType, uint32 packetSize)
-		: packetType(packetType), packetSize(packetSize) {}
+	PacketHeader(uint16 id, uint32 size)
+		: id(id), size(size) {}
 };
 #pragma pack()
 
+#ifdef MY_PACKET
 class IPacket 
 {
 public:
@@ -144,3 +142,4 @@ PacketReader& PacketReader::operator>>(vector<T>& data)
 
 	return *this;
 }
+#endif

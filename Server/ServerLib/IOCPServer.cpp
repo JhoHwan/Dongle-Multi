@@ -4,21 +4,19 @@
 #include "IOCPEvent.h"
 #include "SendBuffer.h"
 
-IOCPServer::IOCPServer(NetAddress address, SessionFactory sessionFactory, shared_ptr<PacketHandler> packetHandler) 
-    : _address(address), _sessionFactory(sessionFactory), _packetHandler(packetHandler)
+IOCPServer::IOCPServer(NetAddress address, SessionFactory sessionFactory) 
+    : _address(address), _sessionFactory(sessionFactory)
 {
 }
 
 IOCPServer::~IOCPServer()
 {
     _listener.reset();
-    _packetHandler.reset();
 }
 
 shared_ptr<Session> IOCPServer::CreateSession()
 {
     auto session = _sessionFactory();
-    session->SetPacketHandler(_packetHandler);
 
     session->CreateSocket();
 
@@ -49,8 +47,6 @@ void IOCPServer::BroadCast(shared_ptr<SendBuffer> sendBuffer)
 
 bool IOCPServer::Start()
 {
-    _packetHandler->SetOwner(shared_from_this());
-
     _listener = make_shared<Listener>(10);
 
     _listener->StartAccept(shared_from_this());
@@ -95,7 +91,7 @@ void IOCPServer::Dispatch(uint16 iocpDispatchTime, uint16 jobDispatchTime)
 {
     DispatchIocpEvent(iocpDispatchTime);
 
-    DispatchJob(jobDispatchTime);
+    //DispatchJob(jobDispatchTime);
 }
 
 void IOCPServer::AddSession(shared_ptr<Session> session)

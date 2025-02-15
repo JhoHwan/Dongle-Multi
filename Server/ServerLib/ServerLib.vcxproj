@@ -154,6 +154,7 @@
     <ClInclude Include="Connector.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="CorePch.h" />
+    <ClInclude Include="DoubleJobQueue.h" />
     <ClInclude Include="IOCPCore.h" />
     <ClInclude Include="IOCPEvent.h" />
     <ClInclude Include="IOCPObject.h" />
@@ -164,7 +165,6 @@
     <ClInclude Include="Listener.h" />
     <ClInclude Include="NetAddress.h" />
     <ClInclude Include="IPacket.h" />
-    <ClInclude Include="PacketHandler.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="SendBuffer.h" />
@@ -176,6 +176,7 @@
     <ClCompile Include="Connector.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="CorePch.cpp" />
+    <ClCompile Include="DoubleJobQueue.cpp" />
     <ClCompile Include="IOCPCore.cpp" />
     <ClCompile Include="IOCPEvent.cpp" />
     <ClCompile Include="IOCPObject.cpp" />
@@ -186,7 +187,6 @@
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="NetAddress.cpp" />
     <ClCompile Include="IPacket.cpp" />
-    <ClCompile Include="PacketHandler.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Server\ServerLib;$(SolutionDir)Server\Libraries\Protobuf\Include;$(SolutionDir)Server\Libraries\Flatbuffers;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Server\Libraries\ServerCore\$(Configuration);$(SolutionDir)Server\Libraries\Protobuf\$(Configuration);$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Server\ServerLib;$(SolutionDir)Server\Libraries\Protobuf\Include;$(VCInstallDir)Auxiliary\VS\UnitTest\include;$(SolutionDir)Server\Libraries\Flatbuffers;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(SolutionDir)Server\Libraries\ServerCore\$(Configuration);$(SolutionDir)Server\Libraries\Protobuf\$(Configuration);$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Server\Build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -117,11 +117,19 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)Protobuf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>CALL "$(SolutionDir)Server\PacketTool\protoc-21.12-win64\bin\GenPackets.bat"</Command>
+    </PreBuildEvent>
+    <CustomBuild>
+      <Command>
+      </Command>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -146,32 +154,50 @@
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="IDGenerator.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="ServerPacketHandler.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="PlayerSession.cpp" />
+    <ClCompile Include="Protobuf\Enum.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Protobuf\Protocol.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Room.cpp" />
-    <ClCompile Include="RoomManager.cpp" />
-    <ClCompile Include="ServerPacketHandler.cpp" />
+    <ClCompile Include="Protobuf\Struct.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ServerPch.cpp" />
+    <ClCompile Include="TestFlatbuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FlatBuffer\Protocol_generated.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="IDGenerator.h" />
-    <ClInclude Include="Packet.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="ServerPacketHandler.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlayerSession.h" />
+    <ClInclude Include="Protobuf\Enum.pb.h" />
     <ClInclude Include="Protobuf\Protocol.pb.h" />
-    <ClInclude Include="Room.h" />
-    <ClInclude Include="RoomManager.h" />
-    <ClInclude Include="ServerPacketHandler.h" />
-    <ClInclude Include="Structs.h" />
+    <ClInclude Include="Protobuf\Struct.pb.h" />
+    <ClInclude Include="ServerPch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Include="..\PacketTool\protoc-21.12-win64\bin\Enum.proto" />
+    <UpToDateCheckInput Include="..\PacketTool\protoc-21.12-win64\bin\GenPackets.bat" />
+    <UpToDateCheckInput Include="..\PacketTool\protoc-21.12-win64\bin\Protocol.proto" />
+    <UpToDateCheckInput Include="..\PacketTool\protoc-21.12-win64\bin\Struct.proto" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\Enum.proto" />
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\GenPackets.bat" />
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\Protocol.proto" />
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\Struct.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

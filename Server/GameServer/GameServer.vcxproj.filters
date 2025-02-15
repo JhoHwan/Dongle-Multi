@@ -9,24 +9,26 @@
     <ClCompile Include="PlayerSession.cpp">
       <Filter>Server</Filter>
     </ClCompile>
-    <ClCompile Include="Room.cpp">
-      <Filter>Server\Contents</Filter>
-    </ClCompile>
-    <ClCompile Include="RoomManager.cpp">
-      <Filter>Server\Contents</Filter>
-    </ClCompile>
     <ClCompile Include="IDGenerator.cpp">
       <Filter>Server\Contents</Filter>
     </ClCompile>
     <ClCompile Include="Protobuf\Protocol.pb.cc">
       <Filter>Packet\Protobuf</Filter>
     </ClCompile>
-    <ClCompile Include="Packet.cpp">
-      <Filter>Packet\MyPacket</Filter>
+    <ClCompile Include="Protobuf\Struct.pb.cc">
+      <Filter>Packet\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="Protobuf\Enum.pb.cc">
+      <Filter>Packet\Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFlatbuffer.cpp">
+      <Filter>Packet\FlatBuffer</Filter>
     </ClCompile>
     <ClCompile Include="ServerPacketHandler.cpp">
-      <Filter>Packet\MyPacket</Filter>
+      <Filter>Packet\Protobuf</Filter>
     </ClCompile>
+    <ClCompile Include="ServerPch.cpp" />
+    <ClCompile Include="Map.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -36,30 +38,26 @@
     <ClInclude Include="PlayerSession.h">
       <Filter>Server</Filter>
     </ClInclude>
-    <ClInclude Include="Room.h">
-      <Filter>Server\Contents</Filter>
-    </ClInclude>
-    <ClInclude Include="RoomManager.h">
-      <Filter>Server\Contents</Filter>
-    </ClInclude>
     <ClInclude Include="IDGenerator.h">
       <Filter>Server\Contents</Filter>
-    </ClInclude>
-    <ClInclude Include="Protobuf\Protocol.pb.h">
-      <Filter>Packet\Protobuf</Filter>
-    </ClInclude>
-    <ClInclude Include="Structs.h">
-      <Filter>Packet\MyPacket</Filter>
-    </ClInclude>
-    <ClInclude Include="Packet.h">
-      <Filter>Packet\MyPacket</Filter>
-    </ClInclude>
-    <ClInclude Include="ServerPacketHandler.h">
-      <Filter>Packet\MyPacket</Filter>
     </ClInclude>
     <ClInclude Include="FlatBuffer\Protocol_generated.h">
       <Filter>Packet\FlatBuffer</Filter>
     </ClInclude>
+    <ClInclude Include="Protobuf\Struct.pb.h">
+      <Filter>Packet\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="Protobuf\Protocol.pb.h">
+      <Filter>Packet\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="Protobuf\Enum.pb.h">
+      <Filter>Packet\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPacketHandler.h">
+      <Filter>Packet\Protobuf</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPch.h" />
+    <ClInclude Include="Map.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Server">
@@ -74,11 +72,25 @@
     <Filter Include="Packet\Protobuf">
       <UniqueIdentifier>{aff50a79-f25d-4a26-a331-59e1f30be704}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Packet\MyPacket">
-      <UniqueIdentifier>{81daee20-2f06-49b5-987a-5c5b21317d77}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Packet\FlatBuffer">
       <UniqueIdentifier>{ee747398-bc63-4a54-a564-270ee4aed688}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Packet\Protobuf\Proto">
+      <UniqueIdentifier>{8b4fcfba-e48b-41dc-859e-1e96f66b942b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\Enum.proto">
+      <Filter>Packet\Protobuf\Proto</Filter>
+    </None>
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\GenPackets.bat">
+      <Filter>Packet\Protobuf\Proto</Filter>
+    </None>
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\Protocol.proto">
+      <Filter>Packet\Protobuf\Proto</Filter>
+    </None>
+    <None Include="..\PacketTool\protoc-21.12-win64\bin\Struct.proto">
+      <Filter>Packet\Protobuf\Proto</Filter>
+    </None>
   </ItemGroup>
 </Project>

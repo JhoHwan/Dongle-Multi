@@ -30,9 +30,9 @@ public:
 		_managedObject->OnSend(sentBytes);
 	}
 
-	virtual void OnRecv(uint32 recvBytes) override
+	virtual void OnRecv(BYTE* buffer, int32 len) override
 	{
-		_managedObject->OnRecv(recvBytes);
+		_managedObject->OnRecv(len);
 	}
 
 private:
